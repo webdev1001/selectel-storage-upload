@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Selectel Storage Upload\n"
+"POT-Creation-Date: 2014-07-06 00:45+0300\n"
+"PO-Revision-Date: 2014-07-06 00:45+0300\n"
+"Last-Translator: Mauhem <me@wm-talk.net>\n"
+"Language-Team: Mauhem <me@wm-talk.net>\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.6\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: supload.php:33
+msgid "Connection is successfully established."
+msgstr ""
+
+#: supload.php:60
+msgid "TAR archive not exists."
+msgstr ""
+
+#: supload.php:77
+msgid "TAR.BZ2 archive not exists."
+msgstr ""
+
+#: supload.php:109
+msgid "Settings"
+msgstr ""
+
+#: supload.php:131
+msgid "Type the information for access to your bucket."
+msgstr ""
+
+#: supload.php:134
+msgid "Username"
+msgstr ""
+
+#: supload.php:137
+msgid "Password"
+msgstr ""
+
+#: supload.php:140
+msgid "Bucket"
+msgstr ""
+
+#: supload.php:143
+msgid "Local path"
+msgstr ""
+
+#: supload.php:145
+msgid "Local path to the uploaded files. By default"
+msgstr ""
+
+#: supload.php:147
+msgid "Full URL-path to files"
+msgstr ""
+
+#: supload.php:150
+msgid "Enter the domain or subdomain if store files in the Selectel Storage"
+msgstr ""
+
+#: supload.php:150
+msgid "or full url path, if only used synchronization"
+msgstr ""
+
+#: supload.php:153
+msgid "Authorization server"
+msgstr ""
+
+#: supload.php:155
+msgid "By default"
+msgstr ""
+
+#: supload.php:158
+msgid "Synchronization settings"
+msgstr ""
+
+#: supload.php:160
+msgid "Only synchronize files"
+msgstr ""
+
+#: supload.php:162
+msgid "Store files only in the Selectel Storage"
+msgstr ""
+
+#: supload.php:163
+msgid "to attach a domain / subdomain to store and specify the settings"
+msgstr ""
+
+#: supload.php:172
+msgid "Check the connection"
+msgstr ""
+
+#: supload.php:173
+msgid "Manually synchronize"
+msgstr ""
+
+#: supload.php:176
+msgid ""
+"You can always help the development of plug-in and contribute to the "
+"emergence of new functionality."
+msgstr ""
+
+#: supload.php:177
+msgid "If you have any ideas or suggestions"
+msgstr ""
+
+#: supload.php:177
+msgid "contact the author"
+msgstr ""
+
+#: supload.php:178
+msgid "You can always thank the author of financially."
+msgstr ""
+
+#: supload.php:188
+msgid "Yandex.Money"
+msgstr ""
+
+#: supload.php:164
+msgid "Delete files from the Selectel Storage if they are removed from the library"
+msgstr ""
