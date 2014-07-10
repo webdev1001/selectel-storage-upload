@@ -1,6 +1,6 @@
 <?php
 
-class SelectelStorage
+class supload_SelectelStorage
 {
 
     /**
@@ -47,14 +47,14 @@ class SelectelStorage
      * @param string $format Allowed response formats
      * @param boolean $check Echo error as throw Exception
      *
-     * @return SelectelStorage
+     * @return supload_SelectelStorage
      */
     public function __construct ($user, $key, $server = 'auth.selcdn.ru', $format = null, $check = null)
     {
         if ($check !== null) {
             self::$throwExcaptions = true;
         }
-        $header = sCurl::init ('https://' . $server . '/')
+        $header = supload_sCurl::init ('https://' . $server . '/')
                 ->setHeaders (array("X-Auth-User: {$user}", "X-Auth-Key: {$key}"))
                 ->request ("GET")
                 ->getHeaders ();
@@ -110,7 +110,7 @@ class SelectelStorage
      */
     public function getInfo ()
     {
-        $head = sCurl::init ($this->url)
+        $head = supload_sCurl::init ($this->url)
                 ->setHeaders ($this->token)
                 ->request ("HEAD")
                 ->getHeaders ();
@@ -134,7 +134,7 @@ class SelectelStorage
             'format' => (!in_array ($format, $this->formats, true) ? $this->format : $format)
         );
 
-        $cont = sCurl::init ($this->url)
+        $cont = supload_sCurl::init ($this->url)
                 ->setHeaders ($this->token)
                 ->setParams ($params)
                 ->request ("GET")
@@ -154,12 +154,12 @@ class SelectelStorage
      * @param string $name
      * @param array $headers
      *
-     * @return SelectelContainer
+     * @return supload_SelectelContainer
      */
     public function createContainer ($name, $headers = array())
     {
         $headers = array_merge ($this->token, $headers);
-        $info    = sCurl::init ($this->url . $name)
+        $info    = supload_sCurl::init ($this->url . $name)
                 ->setHeaders ($headers)
                 ->request ("PUT")
                 ->getInfo ();
@@ -180,7 +180,7 @@ class SelectelStorage
      */
     public function delete ($name)
     {
-        $info = sCurl::init ($this->url . $name)
+        $info = supload_sCurl::init ($this->url . $name)
                 ->setHeaders ($this->token)
                 ->request ("DELETE")
                 ->getInfo ();
@@ -204,7 +204,7 @@ class SelectelStorage
     {
         $destin  = $this->url . $destin;
         $headers = array_merge ($this->token, array("Destination: {$destin}"));
-        $info    = sCurl::init ($this->url . $origin)
+        $info    = supload_sCurl::init ($this->url . $origin)
                 ->setHeaders ($headers)
                 ->request ("COPY")
                 ->getResult ();
@@ -230,7 +230,7 @@ class SelectelStorage
             return false;
         }
 
-        $info = sCurl::init ($this->url . $name)
+        $info = supload_sCurl::init ($this->url . $name)
                 ->setHeaders ($headers)
                 ->request ("POST")
                 ->getInfo ();
@@ -257,12 +257,12 @@ class SelectelStorage
      *
      * @param string $name
      *
-     * @return SelectelContainer
+     * @return supload_SelectelContainer
      */
     public function getContainer ($name)
     {
         $url     = $this->url . $name;
-        $headers = sCurl::init ($url)
+        $headers = supload_sCurl::init ($url)
                 ->setHeaders ($this->token)
                 ->request ("HEAD")
                 ->getHeaders ();
@@ -271,12 +271,12 @@ class SelectelStorage
             return $this->error ($headers["HTTP-Code"], 'Incorrectly selected container');
         }
 
-        return new SelectelContainer ($url, $this->token, $this->format, $this->getX ($headers));
+        return new supload_SelectelContainer ($url, $this->token, $this->format, $this->getX ($headers));
     }
 
 }
 
-class SelectelContainer extends SelectelStorage
+class supload_SelectelContainer extends supload_SelectelStorage
 {
 
     /**
@@ -307,7 +307,7 @@ class SelectelContainer extends SelectelStorage
             return $this->info;
         }
 
-        $headers = sCurl::init ($this->url)
+        $headers = supload_sCurl::init ($this->url)
                 ->setHeaders ($this->token)
                 ->request ("HEAD")
                 ->getHeaders ();
@@ -342,7 +342,7 @@ class SelectelContainer extends SelectelStorage
             'format'     => (!in_array ($format, $this->formats, true) ? $this->format : $format)
         );
 
-        $res = sCurl::init ($this->url)
+        $res = supload_sCurl::init ($this->url)
                 ->setHeaders ($this->token)
                 ->setParams ($params)
                 ->request ("GET")
@@ -372,7 +372,7 @@ class SelectelContainer extends SelectelStorage
     public function getFile ($name, $headers = array())
     {
         $headers = array_merge ($headers, $this->token);
-        $res     = sCurl::init ($this->url . $name)
+        $res     = supload_sCurl::init ($this->url . $name)
                 ->setHeaders ($headers)
                 ->request ("GET")
                 ->getResult ();
@@ -403,7 +403,7 @@ class SelectelContainer extends SelectelStorage
      */
     public function putFile ($localFileName, $remoteFileName, $formatArchive = null)
     {
-        $info = sCurl::init ($this->url . $remoteFileName . ($formatArchive != null ? '?extract-archive=' . $formatArchive : ''))
+        $info = supload_sCurl::init ($this->url . $remoteFileName . ($formatArchive != null ? '?extract-archive=' . $formatArchive : ''))
                 ->setHeaders ($this->token)
                 ->putFile ($localFileName)
                 ->getInfo ();
@@ -443,7 +443,7 @@ class SelectelContainer extends SelectelStorage
     public function createDirectory ($name)
     {
         $headers = array_merge (array("Content-Type: application/directory"), $this->token);
-        $info    = sCurl::init ($this->url . $name)
+        $info    = supload_sCurl::init ($this->url . $name)
                 ->setHeaders ($headers)
                 ->request ("PUT")
                 ->getInfo ();
@@ -458,7 +458,7 @@ class SelectelStorageException extends Exception
 
 }
 
-class sCurl
+class supload_sCurl
 {
 
     static private $instance = NULL;
@@ -470,12 +470,12 @@ class sCurl
      *
      * @param string $url
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     static function init ($url)
     {
         if (self::$instance == NULL) {
-            self::$instance = new sCurl ($url);
+            self::$instance = new supload_sCurl ($url);
         }
         return self::$instance->setUrl ($url);
     }
@@ -506,7 +506,7 @@ class sCurl
      *
      * @param string $url URL
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     public function setUrl ($url)
     {
@@ -524,7 +524,7 @@ class sCurl
      *
      * @param string $method
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     public function request ($method)
     {
@@ -547,7 +547,7 @@ class sCurl
      *
      * @param string $method
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     private function method ($method)
     {
@@ -614,7 +614,7 @@ class sCurl
      *
      * @param array $headers
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     public function setHeaders ($headers)
     {
@@ -628,7 +628,7 @@ class sCurl
      *
      * @param array $params
      *
-     * @return sCurl
+     * @return supload_sCurl
      */
     public function setParams ($params)
     {

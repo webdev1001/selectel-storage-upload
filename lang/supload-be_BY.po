@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Selectel Storage Upload\n"
-"POT-Creation-Date: 2014-07-10 17:55+0300\n"
-"PO-Revision-Date: 2014-07-10 17:56+0300\n"
+"POT-Creation-Date: 2014-07-10 18:30+0300\n"
+"PO-Revision-Date: 2014-07-10 18:33+0300\n"
 "Last-Translator: Mauhem <me@wm-talk.net>\n"
 "Language-Team: Mauhem <me@wm-talk.net>\n"
 "Language: be_BY\n"
@@ -21,124 +21,129 @@ msgstr ""
 
 #: supload.php:34
 msgid "Connection is successfully established."
-msgstr ""
+msgstr "Злучэнне паспяхова ўстаноўлена"
 
 #: supload.php:61
 msgid "TAR archive not exists."
-msgstr ""
+msgstr "TAR архіў не існуе."
 
 #: supload.php:75
 msgid "TAR.BZ2 archive not exists."
-msgstr ""
+msgstr "TAR.BZ2 архіў не існуе."
 
 #: supload.php:108
 msgid "Settings"
-msgstr ""
+msgstr "Наладкі"
 
 #: supload.php:130
 msgid "Type the information for access to your bucket."
-msgstr ""
+msgstr "Калі ласка, увядзіце інфармацыю для доступу да вашага кантэйнера."
 
 #: supload.php:132
 msgid "Username"
-msgstr ""
+msgstr "Імя карыстальніка"
 
 #: supload.php:135
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: supload.php:138
 msgid "Bucket"
-msgstr ""
+msgstr "Кантэйнер"
 
 #: supload.php:141
 msgid "Local path"
-msgstr ""
+msgstr "Лакальны шлях"
 
 #: supload.php:143
 msgid "Local path to the uploaded files. By default"
-msgstr ""
+msgstr "Лакальны шлях да загружаных файлаў. Па змаўчанні"
 
 #: supload.php:145
 msgid "Full URL-path to files"
-msgstr ""
+msgstr "Поўны URL-шлях да файлаў"
 
 #: supload.php:148
-msgid "Enter the domain or subdomain if store files only in the Selectel Storage"
+msgid ""
+"Enter the domain or subdomain if store files only in the Selectel Storage"
 msgstr ""
+"Калі ласка, увядзіце дамен альбо паддамен, калі захоўваеце файлы толькі ў "
+"Selectel Storage"
 
 #: supload.php:149
 msgid "or full url path, if only used synchronization"
-msgstr ""
+msgstr "або поўны URL шлях, калі выкарыстоўваецца толькі сінхранізацыя"
 
 #: supload.php:152
 msgid "Authorization server"
-msgstr ""
+msgstr "Cервер аўтарызацыі"
 
 #: supload.php:154
 msgid "By default"
-msgstr ""
+msgstr "Па змаўчанні"
 
 #: supload.php:157
 msgid "Synchronization settings"
-msgstr ""
+msgstr "Наладкі сінхранізацыі"
 
 #: supload.php:159
 msgid "Only synchronize files"
-msgstr ""
+msgstr "Толькі сінхранізаваць файлы"
 
 #: supload.php:161
 msgid "Store files only in the Selectel Storage"
-msgstr ""
+msgstr "Захоўваць файлы толькі ў Selectel Storage"
 
 #: supload.php:162
 msgid "to attach a domain / subdomain to store and specify the settings"
-msgstr ""
+msgstr "трэба дадаць дамен / паддамен да кантэйнера і азначыць гэта ў наладках"
 
 #: supload.php:164
 msgid ""
 "Delete files from the Selectel Storage if they are removed from the library"
-msgstr ""
+msgstr "Выдаляць файлы з Selectel Storage, калі яны выдаляюцца з бібліятэкі"
 
 #: supload.php:173
 msgid "Check the connection"
-msgstr ""
+msgstr "Праверыць злучэнне"
 
 #: supload.php:174
 msgid "Manually synchronize"
-msgstr ""
+msgstr "Сінхранізаваць ўручную "
 
 #: supload.php:177
 msgid ""
 "You can always help the development of plug-in and contribute to the "
 "emergence of new functionality."
 msgstr ""
+"Вы заўсёды можаце дапамагчы развіццю плагіна і спрыяюць з'яўленню новай "
+"функцыянальнасці."
 
 #: supload.php:178
 msgid "If you have any ideas or suggestions"
-msgstr ""
+msgstr "Калі ў вас ёсць ідэі ці прапановы"
 
 #: supload.php:178
 msgid "contact the author"
-msgstr ""
+msgstr "звязацца з аўтарам"
 
 #: supload.php:179
 msgid "You can always thank the author of financially."
-msgstr ""
+msgstr "Вы заўсёды можаце падзякаваць аўтару матэрыяльна."
 
 #: supload.php:189
 msgid "Yandex.Money"
-msgstr ""
+msgstr "Яндэкс.Грошы"
 
 # @ supload
 #. translators: plugin header field 'Name'
 #: supload.php:0
 msgid "Selectel Storage Upload"
-msgstr ""
+msgstr "Selectel Storage Upload"
 
 # @ supload
 #. translators: plugin header field 'Description'
 #: supload.php:0
 msgid ""
 "The plugin allows you to upload files from the library to Selectel Storage"
-msgstr ""
+msgstr "Плягін дазваляе загружаць файлы з бібліятэкі ў Selectel Storage"

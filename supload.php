@@ -3,7 +3,7 @@
   Plugin Name: Selectel Storage Upload
   Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
   Description: The plugin allows you to upload files from the library to Selectel Storage
-  Version: 1.0.0
+  Version: 1.0.1
   Author: Mauhem
   Author URI: http://wm-talk.net/
   License: GNU GPLv2
@@ -15,7 +15,7 @@ load_plugin_textdomain ('supload', false, dirname (plugin_basename (__FILE__)) .
 
 require_once dirname (__FILE__) . '/selectel.class.php';
 
-function showMessage ($message, $errormsg = false)
+function supload_showMessage ($message, $errormsg = false)
 {
     if ($errormsg) {
         echo '<div id="message" class="error">';
@@ -26,18 +26,18 @@ function showMessage ($message, $errormsg = false)
     echo "<p><strong>$message</strong></p></div>";
 }
 
-function testConnet ()
+function supload_testConnet ()
 {
     try {
-        $sel       = new SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'), null, true);
+        $sel       = new supload_SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'), null, true);
         $container = $sel->getContainer (get_option ('selupload_container'));
-        showMessage (__ ('Connection is successfully established.', 'supload'));
+        supload_showMessage (__ ('Connection is successfully established.', 'supload'));
     } catch (Exception $e) {
         echo ($e->getMessage ());
     }
 }
 
-function isDirEmpty ($dir)
+function supload_isDirEmpty ($dir)
 {
     if (!is_readable ($dir)) {
         return NULL;
@@ -45,10 +45,10 @@ function isDirEmpty ($dir)
     return (count (scandir ($dir)) == 2);
 }
 
-function cloudUpload ()
+function supload_cloudUpload ()
 {
     try {
-        if (!isDirEmpty (get_option ('upload_path'))) {
+        if (!supload_isDirEmpty (get_option ('upload_path'))) {
             $name    = time () . '_selupload.tar';
             $link    = sys_get_temp_dir () . '/' . $name;
             $archive = new PharData ($link);
@@ -61,11 +61,11 @@ function cloudUpload ()
                 throw new Exception (__ ('TAR archive not exists.', 'supload'));
             }
             if (file_exists ($link . '.bz2')) {
-                $sel       = new SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'));
+                $sel       = new supload_SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'));
                 $container = $sel->getContainer (get_option ('selupload_container'));
                 if ($container->putFile ($link . '.bz2', '', 'tar.bz2')) {
                     if ((get_option ('selupload_sync') == 'onlystorage')) {
-                        delFolder (get_option ('upload_path') . '/');
+                        supload_delFolder (get_option ('upload_path') . '/');
                         return true;
                     }
                     return false;
@@ -77,12 +77,12 @@ function cloudUpload ()
         }
         return true;
     } catch (Exception $e) {
-        showMessage ($e->getCode () . ' :: ' . $e->getMessage ());
+        supload_showMessage ($e->getCode () . ' :: ' . $e->getMessage ());
     }
     return false;
 }
 
-function delFolder ($dir)
+function supload_delFolder ($dir)
 {
     $it    = new RecursiveDirectoryIterator ($dir);
     $files = new RecursiveIteratorIterator ($it, RecursiveIteratorIterator::CHILD_FIRST);
@@ -92,7 +92,7 @@ function delFolder ($dir)
             continue;
         }
         if (is_dir ($file)) {
-            if (isDirEmpty ($file)) {
+            if (supload_isDirEmpty ($file)) {
                 rmdir ($file);
             }
         } else {
@@ -108,10 +108,10 @@ add_action ('admin_menu', function () {
                         <h2><?php _e ('Settings', 'supload'); ?> Selectel Storage</h2>
                         <?php
                         if (isset ($_POST['test'])) {
-                            testConnet ();
+                            supload_testConnet ();
                         }
                         if (isset ($_POST['archive'])) {
-                            cloudUpload ();
+                            supload_cloudUpload ();
                         }
                         // Определение настроек по умолчанию
                         if (get_option ('upload_path') == 'wp-content/uploads' || get_option ('upload_path') == null) {
@@ -145,7 +145,7 @@ add_action ('admin_menu', function () {
                                         <tr><td><label for="upload_url_path"><b><?php _e ('Full URL-path to files', 'supload'); ?>:</b></label></td><td>
                                                 <input id="upload_url_path" name="upload_url_path" type="text" size="15" value="<?php echo esc_attr (get_option ('upload_url_path')); ?>" class="regular-text code" />
                                                 <p class="description">
-                                                    <?php _e ('Enter the domain or subdomain if store files in the Selectel Storage', 'supload'); ?>
+                                                    <?php _e ('Enter the domain or subdomain if store files only in the Selectel Storage', 'supload'); ?>
                                                     <code>(http://uploads.example.com)</code>, <?php _e ('or full url path, if only used synchronization', 'supload'); ?>
                                                     <code>(http://example.com/wp-content/uploads)</code></p>
                                             </td></tr>
@@ -199,9 +199,9 @@ add_action ('admin_menu', function () {
     );
 });
 
-function cloudDelete ($file)
+function supload_cloudDelete ($file)
 {
-    $sel       = new SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'));
+    $sel       = new supload_SelectelStorage (get_option ('selupload_username'), get_option ('selupload_pass'), get_option ('selupload_auth'));
     $container = $sel->getContainer (get_option ('selupload_container'));
     // Поиск всех миниатюр для удаления вместе с оригиналом
     $files     = glob (substr_replace ($file, '-*.' . pathinfo ($file, PATHINFO_EXTENSION), strripos ($file, '.')));
@@ -222,6 +222,6 @@ function cloudDelete ($file)
 
 //add_action ('add_attachment', 'cloud_upload', 100);
 if (get_option ('selupload_del') == 1) {
-    add_filter ('wp_generate_attachment_metadata', 'cloudUpload');
+    add_filter ('wp_generate_attachment_metadata', 'supload_cloudUpload');
 }
-add_filter ('wp_delete_file', 'cloudDelete', 10, 1);
+add_filter ('wp_delete_file', 'supload_cloudDelete', 10, 1);
