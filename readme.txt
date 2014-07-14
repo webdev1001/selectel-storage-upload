@@ -4,11 +4,11 @@ Donate link: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-select
 Tags: uploads, selectel, cdn, storage, media library
 Requires at least: 3.0.1
 Tested up to: 3.9.1
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin allows you to automatically synchronize media files that are downloaded to the articles or just the library, to Selectel Storage. It also supports synchronization manually.
+This plugin allows you to automatically synchronize media files that are downloaded to the articles or just the library, to Selectel Storage.
 
 == Description ==
 This plugin allows you to synchronize files that are uploaded from the media library Wordpress with Selectel Storage (popular in Russian-speaking countries). Synchronization takes place either in an automatic mode (at upload time) or manually. Supported function to delete files from Selectel Storage when they are removed from the library.

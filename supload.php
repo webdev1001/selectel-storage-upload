@@ -182,8 +182,8 @@ add_action ('admin_menu', function () {
                         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                             <input type="hidden" name="cmd" value="_s-xclick">
                             <input type="hidden" name="hosted_button_id" value="2PSKHUBC5Z986">
-                            <input type="image" src="<?php echo plugins_url (); ?>/supload/img/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                            <img alt="" border="0" src="<?php echo plugins_url (); ?>/supload/img/pixel.gif" width="1" height="1">
+                            <input type="image" src="<?php echo plugins_url ().'/'.dirname(plugin_basename(__FILE__)); ?>/img/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            <img alt="" border="0" src="<?php echo plugins_url ().'/'.dirname(plugin_basename(__FILE__)); ?>/img/pixel.gif" width="1" height="1">
                         </form>
 
                         <p><strong><?php _e ('Yandex.Money', 'supload'); ?></strong><br />
