@@ -111,7 +111,7 @@ add_action(
         add_options_page(
             'Selectel Upload',
             'Selectel Upload',
-            8,
+            'manage_options',
             __FILE__,
             function () {
                 ?>
@@ -353,11 +353,6 @@ function supload_cloudDelete($file)
             @unlink($name);
         }
     }
-    $tmp = implode(
-        ' =|= ',
-        glob(substr_replace($file, '-*.' . pathinfo($file, PATHINFO_EXTENSION), strripos($file, '.')))
-    );
-    file_put_contents('e:\OpenServer\file.txt', $tmp . "\n", FILE_APPEND);
     return $file;
 }
 
