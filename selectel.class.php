@@ -41,11 +41,10 @@ class supload_SelectelStorage
      * @param string $key Storage key
      * @param string $server Authorization server
      * @param string $format Allowed response formats
-     * @param boolean $check Echo error as throw Exception
      *
      * @return supload_SelectelStorage
      */
-    public function __construct($user, $key, $server = 'auth.selcdn.ru', $format = null, $check = null)
+    public function __construct($user, $key, $server = 'auth.selcdn.ru', $format = null)
     {
         $header = supload_sCurl::init('https://' . $server . '/')
             ->setHeaders(array("X-Auth-User: {$user}", "X-Auth-Key: {$key}"))
@@ -70,6 +69,9 @@ class supload_SelectelStorage
      * @param string $message Error message
      *
      * @return integer
+     *
+     * @throws SelectelStorageException
+     *
      */
     protected function error($code, $message)
     {
@@ -291,9 +293,9 @@ class supload_SelectelContainer extends supload_SelectelStorage
     /**
      * Getting container info
      *
-     * @param boolean $refresh Refres? Default false
+     * @param boolean $refresh Refresh Default false
      *
-     * @return array
+     * @return array|integer returns an error code (integer) or container info (array)
      */
     public function getInfo($refresh = false)
     {

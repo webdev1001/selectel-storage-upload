@@ -63,7 +63,7 @@ function supload_testConnet()
     try {
         $sel = new supload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'), get_option(
             'selupload_auth'
-        ), null);
+        ));
         if ($sel->getContainer(get_option('selupload_container')) instanceof supload_SelectelContainer) {
             supload_showMessage(__('Connection is successfully established.', 'supload'));
         } else {

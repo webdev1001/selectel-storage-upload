@@ -9,8 +9,6 @@ License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin allows you to automatically synchronize media files that are downloaded to the articles or just the library, to Selectel Storage.
-In Russian:
-Этот плагин позволяет автоматически синхронизировать мультимедийные файлы, загружаемые к статьям или просто в библиотеку, с облачным хранилищем Selectel.
 
 == Description ==
 This plugin allows you to synchronize files that are uploaded from the media library Wordpress with Selectel Storage (popular in Russian-speaking countries). Synchronization takes place either in an automatic mode (at upload time) or manually. Supported function to delete files from Selectel Storage when they are removed from the library.
