@@ -47,9 +47,6 @@ class supload_SelectelStorage
      */
     public function __construct($user, $key, $server = 'auth.selcdn.ru', $format = null, $check = null)
     {
-        if ($check !== null) {
-            self::$throwExcaptions = true;
-        }
         $header = supload_sCurl::init('https://' . $server . '/')
             ->setHeaders(array("X-Auth-User: {$user}", "X-Auth-Key: {$key}"))
             ->request("GET")
@@ -62,13 +59,15 @@ class supload_SelectelStorage
         $this->format = (!in_array($format, $this->formats, true) ? $this->format : $format);
         $this->url = $header['x-storage-url'];
         $this->token = array("X-Auth-Token: {$header['x-storage-token']}");
+
+        return true;
     }
 
     /**
      * Handle errors
      *
-     * @param integer $code
-     * @param string $message
+     * @param integer $code Error code
+     * @param string $message Error message
      *
      * @return integer
      */
@@ -98,7 +97,6 @@ class supload_SelectelStorage
      * Select only 'x-' from headers
      *
      * @param array $headers Array of headers
-     * @param string $prefix Frefix for filtering
      *
      * @return array
      */
@@ -116,7 +114,7 @@ class supload_SelectelStorage
     /**
      * Getting containers list
      *
-     * @param string $limit Limit (Default 10000)
+     * @param integer $limit Limit (Default 10000)
      * @param string $marker Marker (Default '')
      * @param string $format Format ('', 'json', 'xml') (Default self::$format)
      *
@@ -194,7 +192,7 @@ class supload_SelectelStorage
      *
      * @param string $name
      *
-     * @return integera
+     * @return integer
      */
     public function delete($name)
     {
@@ -213,10 +211,10 @@ class supload_SelectelStorage
     /**
      * Copy
      *
-     * @param type $origin Origin object
-     * @param type $destin Destination
+     * @param string $origin Origin object
+     * @param string $destin Destination
      *
-     * @return type
+     * @return array
      */
     public function copy($origin, $destin)
     {
@@ -285,7 +283,9 @@ class supload_SelectelContainer extends supload_SelectelStorage
         $this->url = $url . "/";
         $this->token = $token;
         $this->format = (!in_array($format, $this->formats, true) ? $this->format : $format);
-        $this->info = (count($info) == 0 ? $this->getInfo(true) : $info = array());
+        count($info) == 0 ? $this->info = $this->getInfo(true) : $this->info = array();
+
+        return true;
     }
 
     /**
@@ -354,7 +354,7 @@ class supload_SelectelContainer extends supload_SelectelStorage
     /**
      * Getting file list
      *
-     * @param string $limit Limit
+     * @param integer $limit Limit
      * @param string $marker Marker
      * @param string $prefix Prefix
      * @param string $path Path
@@ -397,7 +397,8 @@ class supload_SelectelContainer extends supload_SelectelStorage
      * Upload local file
      *
      * @param string $localFileName The name of a local file
-     * @param string $remouteFileName The name of storage file
+     * @param string $remoteFileName The name of storage file
+     * @param string $formatArchive Archive format, if you need a decompression
      *
      * @return array
      */
@@ -468,6 +469,7 @@ class supload_sCurl
     private $url = null;
     private $params = array();
     private $result = array();
+    private $openFile = null;
 
     /**
      * Curl wrapper
@@ -479,16 +481,29 @@ class supload_sCurl
         $this->ch = curl_init($url);
         curl_setopt($this->ch, CURLOPT_ENCODING, 'gzip,defalate');
         //curl_setopt ($this->ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($this - ch, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($this->ch, CURLOPT_MAXREDIRS, 5);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_HEADER, true);
         curl_setopt($this->ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, true);
+        curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($this->ch, CURLOPT_BINARYTRANSFER, true);
 // TODO: big files
 // curl_setopt($this->ch, CURLOPT_RANGE, "0-100");
         $this->setUrl($url);
+    }
+
+    /**
+     * Set url for request
+     *
+     * @param string $url URL
+     *
+     * @return supload_sCurl
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return self::$instance;
     }
 
     /**
@@ -505,23 +520,10 @@ class supload_sCurl
         return self::$instance->setUrl($url);
     }
 
-    /**
-     * Set url for request
-     *
-     * @param string $url URL
-     *
-     * @return supload_sCurl
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-        return self::$instance;
-    }
-
     public function putFile($file)
     {
-        $fp = fopen($file, "r");
-        curl_setopt($this->ch, CURLOPT_INFILE, $fp);
+        $this->openFile = fopen($file, "r");
+        curl_setopt($this->ch, CURLOPT_INFILE, $this->openFile);
         curl_setopt($this->ch, CURLOPT_INFILESIZE, filesize($file));
         return $this->request('PUT');
     }
@@ -545,7 +547,9 @@ class supload_sCurl
         $this->result['header'] = $this->parseHead($response[0]);
         unset ($response[0]);
         $this->result['content'] = join("\r\n\r\n", $response);
-
+        if ($this->openFile != null){
+            fclose($this->openFile);
+        }
         return self::$instance;
     }
 
@@ -607,9 +611,10 @@ class supload_sCurl
         preg_match_all("/([A-z\-]+)\: (.*)\r\n/", $head, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $match) {
+            if ((!empty($match[1])) and (isset($match[2]))) {
+            }
             $result[strtolower($match[1])] = $match[2];
         }
-
         return $result;
     }
 
@@ -620,8 +625,10 @@ class supload_sCurl
      *
      * @return supload_sCurl
      */
-    public function setHeaders($headers)
-    {
+    public
+    function setHeaders(
+        $headers
+    ) {
         $headers = array_merge(array("Expect:"), $headers);
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
         return self::$instance;
@@ -634,8 +641,10 @@ class supload_sCurl
      *
      * @return supload_sCurl
      */
-    public function setParams($params)
-    {
+    public
+    function setParams(
+        $params
+    ) {
         $this->params = $params;
         return self::$instance;
     }
@@ -645,7 +654,8 @@ class supload_sCurl
      *
      * @return array
      */
-    public function getResult()
+    public
+    function getResult()
     {
         return $this->result;
     }
@@ -657,8 +667,10 @@ class supload_sCurl
      *
      * @return array
      */
-    public function getHeaders($header = null)
-    {
+    public
+    function getHeaders(
+        $header = null
+    ) {
         if (!is_null($header)) {
             $this->result['header'][$header];
         }
@@ -670,7 +682,8 @@ class supload_sCurl
      *
      * @return array
      */
-    public function getContent()
+    public
+    function getContent()
     {
         return $this->result['content'];
     }
@@ -682,17 +695,14 @@ class supload_sCurl
      *
      * @return array
      */
-    public function getInfo($info = null)
-    {
+    public
+    function getInfo(
+        $info = null
+    ) {
         if (!is_null($info)) {
             $this->result['info'][$info];
         }
         return $this->result['info'];
-    }
-
-    private function __clone()
-    {
-
     }
 
 }

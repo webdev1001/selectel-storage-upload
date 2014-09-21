@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Selectel Storage Upload v1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-10 18:25+0300\n"
-"PO-Revision-Date: 2014-07-10 18:33+0300\n"
+"POT-Creation-Date: 2014-09-21 10:08+0300\n"
+"PO-Revision-Date: 2014-09-21 10:14+0300\n"
 "Last-Translator: Mauhem <me@wm-talk.net>\n"
 "Language-Team: Mauhem <me@wm-talk.net>\n"
 "Language: ru_RU\n"
@@ -20,123 +20,152 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
 
+#: supload.php:27
+msgid ""
+"Plugin Selectel Cloud Uploader requires PHP 5.3.1 or higher. The plugin has "
+"now disabled itself."
+msgstr ""
+"Для работы плагина Selectel Cloud Upload необходимо, чтобы версия PHP была "
+"не ниже 5.3.1. Плагин сейчас отключен."
+
+#: supload.php:36
+msgid ""
+"Plugin Selectel Cloud Uploader requires cURL 7.16.2+. The plugin has now "
+"disabled itself."
+msgstr ""
+"Для работы плагина Selectel Cloud Upload необходимо, чтобы версия cURL была "
+"не ниже 7.16.2+. Плагин сейчас отключен."
+
+#: supload.php:41
+msgid ""
+"Plugin Selectel Cloud Uploader requires that cURL is compiled with OpenSSL. "
+"The plugin has now disabled itself."
+msgstr ""
+"Для работы плагина Selectel Cloud Upload необходимо, чтобы cURL был "
+"скомпилирован с поддержкой OpenSSL. Плагин сейчас отключен."
+
 # @ supload
-#: supload.php:34
+#: supload.php:71
 msgid "Connection is successfully established."
 msgstr "Соединение успешно установлено."
 
 # @ supload
-#: supload.php:61
+#: supload.php:73
+msgid "Connection is not established."
+msgstr "Не удалось подключиться к контейнеру."
+
+# @ supload
+#: supload.php:100
 msgid "TAR archive not exists."
 msgstr "TAR архив не существует."
 
 # @ supload
-#: supload.php:75
+#: supload.php:119
 msgid "TAR.BZ2 archive not exists."
 msgstr "TAR.BZ2 архив не существует."
 
 # @ supload
-#: supload.php:108
+#: supload.php:156
 msgid "Settings"
 msgstr "Настройки"
 
 # @ supload
-#: supload.php:130
+#: supload.php:183
 msgid "Type the information for access to your bucket."
 msgstr "Введите информацию для доступа к вашему контейнеру."
 
 # @ supload
-#: supload.php:132
+#: supload.php:189
 msgid "Username"
 msgstr "Имя пользователя"
 
 # @ supload
-#: supload.php:135
+#: supload.php:200
 msgid "Password"
 msgstr "Пароль"
 
 # @ supload
-#: supload.php:138
+#: supload.php:211
 msgid "Bucket"
 msgstr "Контейнер"
 
 # @ supload
-#: supload.php:141
+#: supload.php:222
 msgid "Local path"
 msgstr "Локальный путь"
 
 # @ supload
-#: supload.php:143
+#: supload.php:230
 msgid "Local path to the uploaded files. By default"
 msgstr "Локальный путь к загружаемым файлам. По умолчанию"
 
 # @ supload
-#: supload.php:145
+#: supload.php:237
 msgid "Full URL-path to files"
 msgstr "Полный URL-путь к файлам"
 
 # @ supload
-#: supload.php:148
+#: supload.php:248
 msgid ""
 "Enter the domain or subdomain if store files only in the Selectel Storage"
 msgstr ""
 "Введите адрес домена/поддомена, если файлы хранятся только в Selectel Storage"
 
 # @ supload
-#: supload.php:149
+#: supload.php:252
 msgid "or full url path, if only used synchronization"
 msgstr "или полный Url адрес, если используется только синхронизация"
 
 # @ supload
-#: supload.php:152
+#: supload.php:260
 msgid "Authorization server"
 msgstr "Сервер Аторизации"
 
 # @ supload
-#: supload.php:154
+#: supload.php:269
 msgid "By default"
 msgstr "По умолчанию"
 
 # @ supload
-#: supload.php:157
+#: supload.php:275
 msgid "Synchronization settings"
 msgstr "Настройки синхронизации"
 
 # @ supload
-#: supload.php:159
+#: supload.php:279
 msgid "Only synchronize files"
 msgstr "Только синхронизация файлов"
 
 # @ supload
-#: supload.php:161
+#: supload.php:287
 msgid "Store files only in the Selectel Storage"
 msgstr "Хранить файлы только в Selectel Storage"
 
 # @ supload
-#: supload.php:162
+#: supload.php:291
 msgid "to attach a domain / subdomain to store and specify the settings"
 msgstr ""
 "необходимо прикрепить домен / поддомен к контейнеру в Selectel Storage и "
 "указать его в настройках"
 
 # @ supload
-#: supload.php:164
+#: supload.php:300
 msgid ""
 "Delete files from the Selectel Storage if they are removed from the library"
 msgstr "Удалять файлы из Selectel Storage, если они были удалены из библиотеки"
 
 # @ supload
-#: supload.php:173
+#: supload.php:313
 msgid "Check the connection"
 msgstr "Проверить соединение"
 
 # @ supload
-#: supload.php:174
+#: supload.php:315
 msgid "Manually synchronize"
 msgstr "Ручная синхронизация"
 
 # @ supload
-#: supload.php:177
+#: supload.php:320
 msgid ""
 "You can always help the development of plug-in and contribute to the "
 "emergence of new functionality."
@@ -145,35 +174,21 @@ msgstr ""
 "функциональности."
 
 # @ supload
-#: supload.php:178
+#: supload.php:326
 msgid "If you have any ideas or suggestions"
 msgstr "Если у вас есть идеи или предложения"
 
 # @ supload
-#: supload.php:178
+#: supload.php:329
 msgid "contact the author"
 msgstr "связаться с автором"
 
 # @ supload
-#: supload.php:179
+#: supload.php:335
 msgid "You can always thank the author of financially."
 msgstr "Вы всегда можете поблагодарить автора материально."
 
 # @ supload
-#: supload.php:189
+#: supload.php:354
 msgid "Yandex.Money"
 msgstr "Яндекс.Деньги"
-
-# @ supload
-#. translators: plugin header field 'Name'
-#: supload.php:0
-msgid "Selectel Storage Upload"
-msgstr "Selectel Storage Upload"
-
-# @ supload
-#. translators: plugin header field 'Description'
-#: supload.php:0
-msgid ""
-"The plugin allows you to upload files from the library to Selectel Storage"
-msgstr ""
-"Плагин позволяет загружать файлы из медиа библиотеки в Selectel Storage"
