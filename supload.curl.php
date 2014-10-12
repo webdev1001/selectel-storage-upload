@@ -549,9 +549,10 @@ class supload_sCurl
         $this->result['header'] = $this->parseHead($response[0]);
         unset ($response[0]);
         $this->result['content'] = join("\r\n\r\n", $response);
-        if ($this->openFile != null){
-            fclose($this->openFile);
-        }
+//        if ($this->openFile !== null){
+//            @fclose($this->openFile);
+//            $this->openFile = null;
+//        }
         return self::$instance;
     }
 

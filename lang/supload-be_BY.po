@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Selectel Storage Upload\n"
-"POT-Creation-Date: 2014-09-21 10:14+0300\n"
-"PO-Revision-Date: 2014-09-21 10:18+0300\n"
+"POT-Creation-Date: 2014-10-12 20:11+0300\n"
+"PO-Revision-Date: 2014-10-12 20:12+0300\n"
 "Last-Translator: Mauhem <me@wm-talk.net>\n"
 "Language-Team: Mauhem <me@wm-talk.net>\n"
 "Language: be_BY\n"
@@ -43,103 +43,107 @@ msgstr ""
 "Для працы ўбудовы Selectel Cloud Upload неабходна, каб cURL быў скампіляваны "
 "з падтрымкай OpenSSL. Убудова зараз адключана."
 
-#: supload.php:71
+#: supload.php:48
+msgid ""
+"Plugin Selectel Cloud Uploader requires Zlib extension. The plugin has now "
+"disabled itself."
+msgstr ""
+"Для працы ўбудовы Selectel Cloud Upload неабходна, каб версія пашырэнне Zlib "
+"было ўключана. Убудова зараз адключана."
+
+#: supload.php:75
 msgid "Connection is successfully established."
 msgstr "Злучэнне паспяхова ўстаноўлена"
 
-#: supload.php:73
+#: supload.php:77
 msgid "Connection is not established."
 msgstr "Злучэнне з кантейнераз не  ўстаноўлена. Праверце правільнасць наладак"
 
-#: supload.php:100
-msgid "TAR archive not exists."
-msgstr "TAR архіў не існуе."
-
-#: supload.php:119
-msgid "TAR.BZ2 archive not exists."
-msgstr "TAR.BZ2 архіў не існуе."
-
-#: supload.php:156
+#: supload.php:261
 msgid "Settings"
 msgstr "Наладкі"
 
-#: supload.php:183
+#: supload.php:285
 msgid "Type the information for access to your bucket."
 msgstr "Калі ласка, увядзіце інфармацыю для доступу да вашага кантэйнера."
 
-#: supload.php:189
+#: supload.php:291
 msgid "Username"
 msgstr "Імя карыстальніка"
 
-#: supload.php:200
+#: supload.php:302
 msgid "Password"
 msgstr "Пароль"
 
-#: supload.php:211
+#: supload.php:313
 msgid "Bucket"
 msgstr "Кантэйнер"
 
-#: supload.php:222
+#: supload.php:324
 msgid "Local path"
 msgstr "Лакальны шлях"
 
-#: supload.php:230
+#: supload.php:331
 msgid "Local path to the uploaded files. By default"
 msgstr "Лакальны шлях да загружаных файлаў. Па змаўчанні"
 
-#: supload.php:237
+#: supload.php:338
 msgid "Full URL-path to files"
 msgstr "Поўны URL-шлях да файлаў"
 
-#: supload.php:248
+#: supload.php:349
 msgid ""
 "Enter the domain or subdomain if store files only in the Selectel Storage"
 msgstr ""
 "Калі ласка, увядзіце дамен альбо паддамен, калі захоўваеце файлы толькі ў "
 "Selectel Storage"
 
-#: supload.php:252
+#: supload.php:353
 msgid "or full url path, if only used synchronization"
 msgstr "або поўны URL шлях, калі выкарыстоўваецца толькі сінхранізацыя"
 
-#: supload.php:260
+#: supload.php:361
 msgid "Authorization server"
 msgstr "Cервер аўтарызацыі"
 
-#: supload.php:269
+#: supload.php:370
 msgid "By default"
 msgstr "Па змаўчанні"
 
-#: supload.php:275
+#: supload.php:376
 msgid "Synchronization settings"
 msgstr "Наладкі сінхранізацыі"
 
-#: supload.php:279
+#: supload.php:380
 msgid "Only synchronize files"
 msgstr "Толькі сінхранізаваць файлы"
 
-#: supload.php:287
+#: supload.php:388
 msgid "Store files only in the Selectel Storage"
 msgstr "Захоўваць файлы толькі ў Selectel Storage"
 
-#: supload.php:291
+#: supload.php:392
 msgid "to attach a domain / subdomain to store and specify the settings"
 msgstr "трэба дадаць дамен / паддамен да кантэйнера і азначыць гэта ў наладках"
 
-#: supload.php:300
+#: supload.php:401
 msgid ""
 "Delete files from the Selectel Storage if they are removed from the library"
 msgstr "Выдаляць файлы з Selectel Storage, калі яны выдаляюцца з бібліятэкі"
 
-#: supload.php:313
+#: supload.php:420
+msgid "Complete"
+msgstr "Скончана"
+
+#: supload.php:469
 msgid "Check the connection"
 msgstr "Праверыць злучэнне"
 
-#: supload.php:315
-msgid "Manually synchronize"
-msgstr "Сінхранізаваць ўручную "
+#: supload.php:471
+msgid "Full synchronization"
+msgstr "Поўная сінхранізацыя"
 
-#: supload.php:320
+#: supload.php:476
 msgid ""
 "You can always help the development of plug-in and contribute to the "
 "emergence of new functionality."
@@ -147,18 +151,24 @@ msgstr ""
 "Вы заўсёды можаце дапамагчы развіццю плагіна і спрыяюць з'яўленню новай "
 "функцыянальнасці."
 
-#: supload.php:326
+#: supload.php:482
 msgid "If you have any ideas or suggestions"
 msgstr "Калі ў вас ёсць ідэі ці прапановы"
 
-#: supload.php:329
+#: supload.php:485
 msgid "contact the author"
 msgstr "звязацца з аўтарам"
 
-#: supload.php:335
+#: supload.php:491
 msgid "You can always thank the author of financially."
 msgstr "Вы заўсёды можаце падзякаваць аўтару матэрыяльна."
 
-#: supload.php:354
+#: supload.php:510
 msgid "Yandex.Money"
 msgstr "Яндэкс.Грошы"
+
+#~ msgid "TAR.GZ archive not exists."
+#~ msgstr "TAR.GZ архіў не існуе."
+
+#~ msgid "TAR archive not exists."
+#~ msgstr "TAR архіў не існуе."
