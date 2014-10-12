@@ -42,13 +42,6 @@ if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
                 'supload'
             )
         );
-    } elseif (!extension_loaded('zlib')) {
-        supload_incompatibile(
-            __(
-                'Plugin Selectel Cloud Uploader requires Zlib extension. The plugin has now disabled itself.',
-                'supload'
-            ));
-
     }
 }
 
