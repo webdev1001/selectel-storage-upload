@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.0.4
+ * Version: 1.0.4/2
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -80,6 +80,7 @@ function supload_getName($file)
     $dir = get_option('upload_path');
     $file = str_replace($dir, '', $file);
     $file = str_replace('\\', '/', $file);
+    $file = str_replace(' ', '%20', $file);
     $file = ltrim($file, '/');
 
     return $file;
@@ -167,6 +168,7 @@ function supload_delFolder($dir)
 
 function supload_getFilesArr($dir)
 {
+    $dir = rtrim($dir, '/');
     $listDir = array();
     if ($handle = opendir($dir)) {
         while (false !== ($file = readdir($handle))) {
@@ -210,25 +212,29 @@ function supload_allSynch()
         if (!empty($_POST['files'])) {
             $_POST['files'] = supload_corURI($_POST['files']);
         }
+        $error = '';
         $storage = new supload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'),
             get_option('selupload_auth'));
         $container = $storage->getContainer(get_option('selupload_container'));
         if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
-            if (!empty($_POST['current'])) {
-                $_POST['current'] = count($_POST['files']) - 1;
-            }
-            if (($container->putFile($_POST['files'][count($_POST['files']) - 1],
-                        supload_getName($_POST['files'][count($_POST['files']) - 1])) == true) and (get_option('selupload_sync') == 'onlystorage')
-            ) {
-                @unlink($_POST['files'][count($_POST['files']) - 1]);
+            if (file_exists($_POST['files'][count($_POST['files']) - 1]) and is_readable($_POST['files'][count($_POST['files']) - 1])) {
+
+                if (($container->putFile($_POST['files'][count($_POST['files']) - 1],
+                            supload_getName($_POST['files'][count($_POST['files']) - 1])) == true) and (get_option('selupload_sync') == 'onlystorage')
+                ) {
+                    @unlink($_POST['files'][count($_POST['files']) - 1]);
+                }
+            } else {
+                $error = __('Do not have access to the file',
+                        'supload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
             }
             unset($_POST['files'][count($_POST['files']) - 1]);
             $progress = round(($_POST['count'] - count($_POST['files'])) / $_POST['count'], 3) * 100;
             wp_send_json(array(
                 'files' => $_POST['files'],
                 'count' => $_POST['count'],
-                'current' => count($_POST['files']) - 1,
-                'progress' => $progress
+                'progress' => $progress,
+                'error' => $error
             ));
         }
         exit();
@@ -405,6 +411,7 @@ function supload_settingsPage()
     <div id="progressBar">
         <div></div>
     </div>
+    <div id="synchtext" style="display: none" class="error"></div>
     <script type="text/javascript" language="JavaScript">
         function progress(percent, $element) {
             var prbar = jQuery('#progressBar');
@@ -419,11 +426,10 @@ function supload_settingsPage()
                 prbar.delay(2000).hide(0);
             }
         }
-        function nextfile(files, count, current) {
+        function nextfile(files, count) {
             var data = {
                 files: files,
                 count: count,
-                current: current,
                 action: 'allsynch'
             };
             jQuery.ajax({
@@ -432,8 +438,12 @@ function supload_settingsPage()
                 data: data,
                 success: function (resp) {
                     progress(resp.progress, jQuery('#progressBar'));
-                    if (resp.current != -1) {
-                        nextfile(resp.files, resp.count, resp.current);
+                    if (resp.error !== '') {
+                        jQuery('#synchtext').show(0);
+                        jQuery('#synchtext').html(jQuery('#synchtext').html() + '<p><strong>' + resp.error + '</strong></p>');
+                    }
+                    if (resp.files.length !== 0) {
+                        nextfile(resp.files, resp.count);
                     } else {
                         progress(100, jQuery('#progressBar'));
                     }
@@ -443,6 +453,8 @@ function supload_settingsPage()
             });
         }
         function mansynch() {
+            jQuery('#synchtext').html('');
+            jQuery('#synchtext').hide(0);
             jQuery('#progressBar').show(0);
             progress(0, jQuery('#progressBar'));
             <?php
@@ -454,8 +466,12 @@ function supload_settingsPage()
                 url: ajaxurl,
                 data: data,
                 success: function (resp) {
+                    if (resp.error !== '') {
+                        jQuery('#synchtext').show(0);
+                        jQuery('#synchtext').html(jQuery('#synchtext').html() + '<p><strong>' + resp.error + '</strong></p>');
+                    }
                     progress(resp.progress, jQuery('#progressBar'));
-                    nextfile(resp.files, resp.count, resp.current)
+                    nextfile(resp.files, resp.count);
                 },
                 dataType: 'json',
                 async: true
@@ -539,12 +555,12 @@ function supload_cloudDelete($file)
     ));
     $container = $sel->getContainer(get_option('selupload_container'));
     $container->delete(supload_getName($file));
+    $shab = array();
     if (preg_match("/(.+)-(\d{3,4})x(\d{3,4})\.(.*)/u", $file, $shab)) {
         $files = glob(get_option('upload_path') . DIRECTORY_SEPARATOR . $shab[1] . '-*.' . $shab[4]);
         $files[] = get_option('upload_path') . DIRECTORY_SEPARATOR . $shab[1] . '.' . $shab[4];
 
     } else {
-        // Поиск всех миниатюр для удаления вместе с оригиналом
         $files = glob(get_option('upload_path') . DIRECTORY_SEPARATOR . substr_replace($file,
                 '-*.' . pathinfo($file, PATHINFO_EXTENSION), strripos($file, '.')));
         $files[] = $file;

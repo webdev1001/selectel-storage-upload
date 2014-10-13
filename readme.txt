@@ -4,7 +4,7 @@ Donate link: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-select
 Tags: uploads, selectel, cdn, cloud, storage, media library
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.0.4
+Stable tag: 1.0.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
