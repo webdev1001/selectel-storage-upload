@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.0.4/2
+ * Version: 1.0.4/3
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -94,7 +94,7 @@ function supload_cloudUpload($postID)
         ), get_option('selupload_auth'));
         $container = $sel->getContainer(get_option('selupload_container'));
         $file = get_attached_file($postID);
-        if (file_exists($file) and is_readable($file)) {
+        if (is_readable($file)) {
             if (($container->putFile($file,
                         supload_getName($file)) == true) and (get_option('selupload_sync') == 'onlystorage')
             ) {
@@ -121,7 +121,7 @@ function supload_thumbUpload($metadata)
         $container = $storage->getContainer(get_option('selupload_container'));
         foreach ($metadata['sizes'] as $thumb) {
             $path = $dir . DIRECTORY_SEPARATOR . $thumb['file'];
-            if (file_exists($path) and is_readable($path)) {
+            if (is_readable($path)) {
                 if (($container->putFile($path,
                             supload_getName($path)) == true) and (get_option('selupload_sync') == 'onlystorage')
                 ) {
@@ -217,7 +217,7 @@ function supload_allSynch()
             get_option('selupload_auth'));
         $container = $storage->getContainer(get_option('selupload_container'));
         if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
-            if (file_exists($_POST['files'][count($_POST['files']) - 1]) and is_readable($_POST['files'][count($_POST['files']) - 1])) {
+            if (is_readable($_POST['files'][count($_POST['files']) - 1])) {
 
                 if (($container->putFile($_POST['files'][count($_POST['files']) - 1],
                             supload_getName($_POST['files'][count($_POST['files']) - 1])) == true) and (get_option('selupload_sync') == 'onlystorage')
@@ -413,8 +413,9 @@ function supload_settingsPage()
     </div>
     <div id="synchtext" style="display: none" class="error"></div>
     <script type="text/javascript" language="JavaScript">
+        var prbar = jQuery('#progressBar');
+        var synchtext = jQuery('#synchtext');
         function progress(percent, $element) {
-            var prbar = jQuery('#progressBar');
             prbar.show(0);
             var progressBarWidth = percent * $element.width() / 100;
             var complete = '';
@@ -422,9 +423,6 @@ function supload_settingsPage()
                 complete = "<?php _e('Complete', 'supload'); ?>&nbsp;";
             }
             $element.find('div').animate({width: progressBarWidth}, 500).html(percent + "%&nbsp;" + complete);
-            if (percent == 100) {
-                prbar.delay(2000).hide(0);
-            }
         }
         function nextfile(files, count) {
             var data = {
@@ -437,52 +435,40 @@ function supload_settingsPage()
                 url: ajaxurl,
                 data: data,
                 success: function (resp) {
-                    progress(resp.progress, jQuery('#progressBar'));
+                    progress(resp.progress, prbar);
                     if (resp.error !== '') {
-                        jQuery('#synchtext').show(0);
-                        jQuery('#synchtext').html(jQuery('#synchtext').html() + '<p><strong>' + resp.error + '</strong></p>');
+                        synchtext.show(0);
+                        synchtext.html(synchtext.html() + '<p><strong>' + resp.error + '</strong></p>');
                     }
                     if (resp.files.length !== 0) {
                         nextfile(resp.files, resp.count);
                     } else {
-                        progress(100, jQuery('#progressBar'));
+                        progress(100, prbar);
+                        prbar.delay(2000).hide(0);
                     }
                 },
                 dataType: 'json',
                 async: true
             });
         }
-        function mansynch() {
-            jQuery('#synchtext').html('');
-            jQuery('#synchtext').hide(0);
-            jQuery('#progressBar').show(0);
-            progress(0, jQuery('#progressBar'));
-            <?php
-                $files = supload_getFilesArr(get_option('upload_path'))
-            ?>
-            var data = <?php echo json_encode(array('action' => 'allsynch','count' => count($files),'files' => $files)); ?>;
-            jQuery.ajax({
-                type: 'POST',
-                url: ajaxurl,
-                data: data,
-                success: function (resp) {
-                    if (resp.error !== '') {
-                        jQuery('#synchtext').show(0);
-                        jQuery('#synchtext').html(jQuery('#synchtext').html() + '<p><strong>' + resp.error + '</strong></p>');
-                    }
-                    progress(resp.progress, jQuery('#progressBar'));
-                    nextfile(resp.files, resp.count);
-                },
-                dataType: 'json',
-                async: true
-            });
+        <?php
+    $files = supload_getFilesArr(get_option('upload_path'));
+    echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
+?>
+        function mansynch(files,count) {
+            synchtext.html('');
+            synchtext.hide(0);
+            prbar.show(0);
+            progress(0, prbar);
+            console.log(files);
+            nextfile(files, count);
         }
     </script>
     <form method="post">
         <input type="submit" name="test" id="submit" class="button button-primary"
                value="<?php _e('Check the connection', 'supload'); ?>"/>
         <input type="button" name="archive" id="submit" class="synch button button-primary"
-               value="<?php _e('Full synchronization', 'supload'); ?>" onclick="mansynch()"/>
+               value="<?php _e('Full synchronization', 'supload'); ?>" onclick="mansynch(files_arr,files_count)"/>
     </form>
     </td>
     <td style="vertical-align: top; text-align: center; padding-top: 10em">
