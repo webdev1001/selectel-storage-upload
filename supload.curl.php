@@ -471,7 +471,7 @@ class supload_sCurl
     private $url = null;
     private $params = array();
     private $result = array();
-    private $openFile = null;
+    private $openFile = false;
 
     /**
      * Curl wrapper
@@ -525,9 +525,14 @@ class supload_sCurl
     public function putFile($file)
     {
         $this->openFile = fopen($file, "r");
-        curl_setopt($this->ch, CURLOPT_INFILE, $this->openFile);
-        curl_setopt($this->ch, CURLOPT_INFILESIZE, filesize($file));
-        return $this->request('PUT');
+        if ($this->openFile != false) {
+            curl_setopt($this->ch, CURLOPT_INFILE, $this->openFile);
+            curl_setopt($this->ch, CURLOPT_INFILESIZE, filesize($file));
+
+            return $this->request('PUT');
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -549,9 +554,10 @@ class supload_sCurl
         $this->result['header'] = $this->parseHead($response[0]);
         unset ($response[0]);
         $this->result['content'] = join("\r\n\r\n", $response);
-        if ($this->openFile != null){
-            fclose($this->openFile);
-        }
+//        if ($this->openFile !== null){
+//            @fclose($this->openFile);
+//            $this->openFile = null;
+//        }
         return self::$instance;
     }
 
