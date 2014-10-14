@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.0.4/3
+ * Version: 1.1.0
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -455,7 +455,7 @@ function supload_settingsPage()
     $files = supload_getFilesArr(get_option('upload_path'));
     echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
 ?>
-        function mansynch(files,count) {
+        function mansynch(files, count) {
             synchtext.html('');
             synchtext.hide(0);
             prbar.show(0);
