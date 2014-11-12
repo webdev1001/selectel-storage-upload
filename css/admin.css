@@ -1,4 +1,4 @@
-#progressBar {
+#supload_progressBar {
         width: 50%;
         height: 22px;
         border: 1px solid #111;
@@ -9,7 +9,7 @@
 	display: none;
 }
  
-#progressBar div {
+#supload_progressBar div {
         height: 100%;
         color: #fff;
         text-align: right;

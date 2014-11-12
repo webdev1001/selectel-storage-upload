@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.1.0
+ * Version: 1.1.0/2
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -21,10 +21,10 @@ function supload_incompatibile($msg)
 }
 
 if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
-    if (version_compare(PHP_VERSION, '5.3.1', '<')) {
+    if (version_compare(PHP_VERSION, '5.3.3', '<')) {
         supload_incompatibile(
             __(
-                'Plugin Selectel Cloud Uploader requires PHP 5.3.1 or higher. The plugin has now disabled itself.',
+                'Plugin Selectel Cloud Uploader requires PHP 5.3.3 or higher. The plugin has now disabled itself.',
                 'supload'
             )
         );
@@ -218,11 +218,13 @@ function supload_allSynch()
         $container = $storage->getContainer(get_option('selupload_container'));
         if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
             if (is_readable($_POST['files'][count($_POST['files']) - 1])) {
-
-                if (($container->putFile($_POST['files'][count($_POST['files']) - 1],
-                            supload_getName($_POST['files'][count($_POST['files']) - 1])) == true) and (get_option('selupload_sync') == 'onlystorage')
-                ) {
+                $result = $container->putFile($_POST['files'][count($_POST['files']) - 1],supload_getName($_POST['files'][count($_POST['files']) - 1]));
+                if ($result === true and get_option('selupload_sync') == 'onlystorage') {
                     @unlink($_POST['files'][count($_POST['files']) - 1]);
+                }
+                if ($result !== true) {
+                $error = __('Impossible to upload a file',
+                    'supload').': ' . $_POST['files'][count($_POST['files']) - 1].' : '.$result;
                 }
             } else {
                 $error = __('Do not have access to the file',
@@ -408,15 +410,15 @@ function supload_settingsPage()
             <?php submit_button(); ?>
         </fieldset>
     </form>
-    <div id="progressBar">
+    <div id="supload_progressBar">
         <div></div>
     </div>
-    <div id="synchtext" style="display: none" class="error"></div>
+    <div id="supload_synchtext" style="display: none" class="error"></div>
     <script type="text/javascript" language="JavaScript">
-        var prbar = jQuery('#progressBar');
-        var synchtext = jQuery('#synchtext');
-        function progress(percent, $element) {
-            prbar.show(0);
+        var supload_prbar = jQuery('#supload_progressBar');
+        var supload_synchtext = jQuery('#supload_synchtext');
+        function supload_progress(percent, $element) {
+            supload_prbar.show(0);
             var progressBarWidth = percent * $element.width() / 100;
             var complete = '';
             if (percent == 100) {
@@ -424,7 +426,7 @@ function supload_settingsPage()
             }
             $element.find('div').animate({width: progressBarWidth}, 500).html(percent + "%&nbsp;" + complete);
         }
-        function nextfile(files, count) {
+        function supload_nextfile(files, count) {
             var data = {
                 files: files,
                 count: count,
@@ -435,16 +437,16 @@ function supload_settingsPage()
                 url: ajaxurl,
                 data: data,
                 success: function (resp) {
-                    progress(resp.progress, prbar);
+                    supload_progress(resp.progress, supload_prbar);
                     if (resp.error !== '') {
-                        synchtext.show(0);
-                        synchtext.html(synchtext.html() + '<p><strong>' + resp.error + '</strong></p>');
+                        supload_synchtext.show(0);
+                        supload_synchtext.html(supload_synchtext.html() + '<p><strong>' + resp.error + '</strong></p>');
                     }
                     if (resp.files.length !== 0) {
-                        nextfile(resp.files, resp.count);
+                        supload_nextfile(resp.files, resp.count);
                     } else {
-                        progress(100, prbar);
-                        prbar.delay(2000).hide(0);
+                        supload_progress(100, supload_prbar);
+                        supload_prbar.delay(2000).hide(0);
                     }
                 },
                 dataType: 'json',
@@ -453,22 +455,25 @@ function supload_settingsPage()
         }
         <?php
     $files = supload_getFilesArr(get_option('upload_path'));
+    if (is_array($files) == false) {
+        echo 'supload_synchtext.show(0);';
+        echo 'supload_synchtext.html(supload_synchtext.html() + \'<p><strong>'.__('Catalog with files is not readable', 'supload').'</strong></p>\');';
+    }
     echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
 ?>
         function mansynch(files, count) {
-            synchtext.html('');
-            synchtext.hide(0);
-            prbar.show(0);
-            progress(0, prbar);
-            console.log(files);
-            nextfile(files, count);
+            supload_synchtext.html('');
+            supload_synchtext.hide(0);
+            supload_prbar.show(0);
+            supload_progress(0, supload_prbar);
+            supload_nextfile(files, count);
         }
     </script>
     <form method="post">
         <input type="submit" name="test" id="submit" class="button button-primary"
                value="<?php _e('Check the connection', 'supload'); ?>"/>
         <input type="button" name="archive" id="submit" class="synch button button-primary"
-               value="<?php _e('Full synchronization', 'supload'); ?>" onclick="mansynch(files_arr,files_count)"/>
+               value="<?php _e('Manual synchronization', 'supload'); ?>" onclick="mansynch(files_arr,files_count)"/>
     </form>
     </td>
     <td style="vertical-align: top; text-align: center; padding-top: 10em">

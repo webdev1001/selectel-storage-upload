@@ -46,6 +46,9 @@ class supload_SelectelStorage
      */
     public function __construct($user, $key, $server = 'auth.selcdn.ru', $format = null)
     {
+        $user = trim($user);
+        $key = trim($key);
+        $server = trim($server);
         $header = supload_sCurl::init('https://' . $server . '/')
             ->setHeaders(array("X-Auth-User: {$user}", "X-Auth-Key: {$key}"))
             ->request("GET")
@@ -471,7 +474,7 @@ class supload_sCurl
     private $url = null;
     private $params = array();
     private $result = array();
-    private $openFile = false;
+    private $openFile = null;
 
     /**
      * Curl wrapper
@@ -528,8 +531,11 @@ class supload_sCurl
         if ($this->openFile != false) {
             curl_setopt($this->ch, CURLOPT_INFILE, $this->openFile);
             curl_setopt($this->ch, CURLOPT_INFILESIZE, filesize($file));
-
-            return $this->request('PUT');
+            # TODO: check correct closing file
+            #return $this->request('PUT');
+            $this->request('PUT');
+            fclose($this->openFile);
+            return self::$instance;
         }else{
             return false;
         }
