@@ -58,6 +58,7 @@ function supload_showMessage($message, $errormsg = false)
     echo "<p><strong>$message</strong></p></div>";
 }
 
+# TODO: проверка соединения через Ajax
 function supload_testConnet()
 {
     try {
@@ -216,6 +217,9 @@ function supload_allSynch()
         $storage = new supload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'),
             get_option('selupload_auth'));
         $container = $storage->getContainer(get_option('selupload_container'));
+        if (($container instanceof supload_SelectelContainer) == false) {
+            $error.=__('Connection is not established.', 'supload');
+        }
         if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
             if (is_readable($_POST['files'][count($_POST['files']) - 1])) {
                 $result = $container->putFile($_POST['files'][count($_POST['files']) - 1],supload_getName($_POST['files'][count($_POST['files']) - 1]));
@@ -223,11 +227,11 @@ function supload_allSynch()
                     @unlink($_POST['files'][count($_POST['files']) - 1]);
                 }
                 if ($result !== true) {
-                $error = __('Impossible to upload a file',
+                $error.= __('Impossible to upload a file',
                     'supload').': ' . $_POST['files'][count($_POST['files']) - 1].' : '.$result;
                 }
             } else {
-                $error = __('Do not have access to the file',
+                $error.= __('Do not have access to the file',
                         'supload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
             }
             unset($_POST['files'][count($_POST['files']) - 1]);
@@ -245,7 +249,7 @@ function supload_allSynch()
     }
 }
 
-add_action('wp_ajax_allsynch', 'supload_allSynch');
+add_action('wp_ajax_supload_allsynch', 'supload_allSynch');
 
 function supload_stylesheetToAdmin()
 {
@@ -430,7 +434,7 @@ function supload_settingsPage()
             var data = {
                 files: files,
                 count: count,
-                action: 'allsynch'
+                action: 'supload_allsynch'
             };
             jQuery.ajax({
                 type: 'POST',
@@ -461,7 +465,7 @@ function supload_settingsPage()
     }
     echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
 ?>
-        function mansynch(files, count) {
+        function supload_mansynch(files, count) {
             supload_synchtext.html('');
             supload_synchtext.hide(0);
             supload_prbar.show(0);
@@ -473,7 +477,7 @@ function supload_settingsPage()
         <input type="submit" name="test" id="submit" class="button button-primary"
                value="<?php _e('Check the connection', 'supload'); ?>"/>
         <input type="button" name="archive" id="submit" class="synch button button-primary"
-               value="<?php _e('Manual synchronization', 'supload'); ?>" onclick="mansynch(files_arr,files_count)"/>
+               value="<?php _e('Manual synchronization', 'supload'); ?>" onclick="supload_mansynch(files_arr,files_count)"/>
     </form>
     </td>
     <td style="vertical-align: top; text-align: center; padding-top: 10em">
