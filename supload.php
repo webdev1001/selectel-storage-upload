@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.1.1/2
+ * Version: 1.2.0
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -157,25 +157,6 @@ function selupload_isDirEmpty($dir)
     return (count(scandir($dir)) == 2);
 }
 
-//function selupload_delFolder($dir)
-//{
-//    $it = new RecursiveDirectoryIterator ($dir);
-//    $files = new RecursiveIteratorIterator ($it, RecursiveIteratorIterator::CHILD_FIRST);
-//    foreach ($files as $file) {
-//
-//        if ($file == '.' || $file == '..') {
-//            continue;
-//        }
-//        if (is_dir($file)) {
-//            if (selupload_isDirEmpty($file)) {
-//                rmdir($file);
-//            }
-//        } else {
-//            unlink($file);
-//        }
-//    }
-//}
-
 function selupload_getFilesArr($dir)
 {
     $dir = rtrim($dir, '/');
@@ -219,7 +200,6 @@ function selupload_corURI($path)
 function selupload_allSynch()
 {
     try {
-//        header('Content-Type: application/json; charset=' . get_option('blog_charset'));
         if (!empty($_POST['files'])) {
             $_POST['files'] = selupload_corURI($_POST['files']);
         }
@@ -260,7 +240,6 @@ function selupload_allSynch()
         }
         exit();
     } catch (Exception $e) {
-        //$error = __('Connection is not established.', 'selupload');
         $error = __('Impossible to upload a file',
                 'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
         wp_send_json(array(
@@ -295,10 +274,7 @@ function selupload_settingsPage()
     <td>
     <h2><?php _e('Settings', 'selupload'); ?> Selectel Storage</h2>
     <?php
-    //    if (isset ($_POST['test'])) {
-    //        selupload_testConnet();
-    //    }
-    // Определение настроек по умолчанию
+    // Default settings
     if (get_option('upload_path') == 'wp-content' . DIRECTORY_SEPARATOR . 'uploads' || get_option(
             'upload_path'
         ) == null
