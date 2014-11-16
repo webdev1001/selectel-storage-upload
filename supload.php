@@ -45,7 +45,9 @@ if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
     }
 }
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'selupload.class.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+use OpenStackStorage\Connection;
 
 function selupload_showMessage($message, $errormsg = false)
 {
@@ -61,20 +63,19 @@ function selupload_showMessage($message, $errormsg = false)
 function selupload_testConnet()
 {
     try {
-        isset($_POST['login'])?$login = $_POST['login']:$login =get_option('selupload_username');
-        isset($_POST['password'])?$password = $_POST['password']:$password = get_option('selupload_pass');
-        isset($_POST['server'])?$server = $_POST['server']:$server = get_option('selupload_auth');
-        isset($_POST['container'])?$container = $_POST['container']:$container = get_option('selupload_container');
+        isset($_POST['login']) ? $login = $_POST['login'] : $login = get_option('selupload_username');
+        isset($_POST['password']) ? $password = $_POST['password'] : $password = get_option('selupload_pass');
+        isset($_POST['server']) ? $server = $_POST['server'] : $server = get_option('selupload_auth');
+        isset($_POST['container']) ? $container = $_POST['container'] : $container = get_option('selupload_container');
 
-        $sel = new selupload_SelectelStorage ($login, $password, $server);
-        if ($sel->getContainer($container) instanceof selupload_SelectelContainer) {
-            selupload_showMessage(__('Connection is successfully established. Save the settings.', 'selupload'));
-        } else {
-            selupload_showMessage(__('Connection is not established.', 'selupload'), true);
-        }
+        $connection = new Connection($login, $password, array('authurl' => 'https://' . $server . '/'), 15);
+        $connection->getContainer($container);
+        selupload_showMessage(__('Connection is successfully established. Save the settings.', 'selupload'));
+
         exit();
     } catch (Exception $e) {
-        echo($e->getMessage());
+        selupload_showMessage(__('Connection is not established.',
+                'selupload') . ' : ' . $e->getMessage() . ($e->getCode() == 0 ? '' : ' - ' . $e->getCode()), true);
         exit();
     }
 }
@@ -95,24 +96,25 @@ function selupload_getName($file)
 function selupload_cloudUpload($postID)
 {
     try {
-        $sel = new selupload_SelectelStorage (get_option('selupload_username'), get_option(
-            'selupload_pass'
-        ), get_option('selupload_auth'));
-        $container = $sel->getContainer(get_option('selupload_container'));
+        $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'));
+        $container = $connection->getContainer(get_option('selupload_container'));
         $file = get_attached_file($postID);
         if (is_readable($file)) {
-            if (($container->putFile($file,
-                        selupload_getName($file)) == true) and (get_option('selupload_sync') == 'onlystorage')
+            $fp = fopen($file, 'r');
+            $object = $container->createObject(selupload_getName($file));
+            $object->write($fp);
+            @fclose($fp);
+            $object = $container->getObject(selupload_getName($file));
+            if (($object instanceof \OpenStackStorage\Object) and (get_option('selupload_sync') == 'onlystorage')
             ) {
                 @unlink($file);
             }
-        } else {
-            return false;
         }
 
         return true;
     } catch (Exception $e) {
-        selupload_showMessage($e->getCode() . ' :: ' . $e->getMessage());
+        selupload_showMessage(($e->getCode() != 0 ? $e->getCode() == 0 . ' :: ' : '') . $e->getMessage());
     }
 
     return false;
@@ -121,16 +123,19 @@ function selupload_cloudUpload($postID)
 function selupload_thumbUpload($metadata)
 {
     try {
+        $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'));
+        $container = $connection->getContainer(get_option('selupload_container'));
         $dir = get_option('upload_path') . DIRECTORY_SEPARATOR . dirname($metadata['file']);
-        $storage = new selupload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'),
-            get_option('selupload_auth'));
-        $container = $storage->getContainer(get_option('selupload_container'));
         foreach ($metadata['sizes'] as $thumb) {
             $path = $dir . DIRECTORY_SEPARATOR . $thumb['file'];
             if (is_readable($path)) {
-                if (($container->putFile($path,
-                            selupload_getName($path)) == true) and (get_option('selupload_sync') == 'onlystorage')
-                ) {
+                $fp = fopen($path, 'r');
+                $object = $container->createObject(selupload_getName($path));
+                $object->write($fp);
+                @fclose($fp);
+                $object = $container->getObject(selupload_getName($path));
+                if (($object instanceof \OpenStackStorage\Object) and (get_option('selupload_sync') == 'onlystorage')) {
                     @unlink($path);
                 }
             }
@@ -138,10 +143,9 @@ function selupload_thumbUpload($metadata)
 
         return $metadata;
     } catch (Exception $e) {
-        selupload_showMessage($e->getCode() . ' :: ' . $e->getMessage());
+        return $metadata;
+        //selupload_showMessage($e->getCode() . ' :: ' . $e->getMessage());
     }
-
-    return $metadata;
 }
 
 function selupload_isDirEmpty($dir)
@@ -153,24 +157,24 @@ function selupload_isDirEmpty($dir)
     return (count(scandir($dir)) == 2);
 }
 
-function selupload_delFolder($dir)
-{
-    $it = new RecursiveDirectoryIterator ($dir);
-    $files = new RecursiveIteratorIterator ($it, RecursiveIteratorIterator::CHILD_FIRST);
-    foreach ($files as $file) {
-
-        if ($file == '.' || $file == '..') {
-            continue;
-        }
-        if (is_dir($file)) {
-            if (selupload_isDirEmpty($file)) {
-                rmdir($file);
-            }
-        } else {
-            unlink($file);
-        }
-    }
-}
+//function selupload_delFolder($dir)
+//{
+//    $it = new RecursiveDirectoryIterator ($dir);
+//    $files = new RecursiveIteratorIterator ($it, RecursiveIteratorIterator::CHILD_FIRST);
+//    foreach ($files as $file) {
+//
+//        if ($file == '.' || $file == '..') {
+//            continue;
+//        }
+//        if (is_dir($file)) {
+//            if (selupload_isDirEmpty($file)) {
+//                rmdir($file);
+//            }
+//        } else {
+//            unlink($file);
+//        }
+//    }
+//}
 
 function selupload_getFilesArr($dir)
 {
@@ -215,36 +219,34 @@ function selupload_corURI($path)
 function selupload_allSynch()
 {
     try {
+//        header('Content-Type: application/json; charset=' . get_option('blog_charset'));
         if (!empty($_POST['files'])) {
             $_POST['files'] = selupload_corURI($_POST['files']);
         }
         $error = '';
-        $storage = new selupload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'),
-            get_option('selupload_auth'));
-        $container = $storage->getContainer(get_option('selupload_container'));
-        if (($container instanceof selupload_SelectelContainer) == false) {
-            $error .= __('Connection is not established.', 'selupload');
-            wp_send_json(array(
-                'files' => $_POST['files'],
-                'count' => $_POST['count'],
-                'progress' => 'Error',
-                'error' => $error
-            ));
-        } else {
+        $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'), 15);
+        $container = $connection->getContainer(get_option('selupload_container'));
+
+        if ($container instanceof \OpenStackStorage\Container) {
             if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
-                if (is_readable($_POST['files'][count($_POST['files']) - 1])) {
-                    $result = $container->putFile($_POST['files'][count($_POST['files']) - 1],
-                        selupload_getName($_POST['files'][count($_POST['files']) - 1]));
-                    if ($result === true and get_option('selupload_sync') == 'onlystorage') {
-                        @unlink($_POST['files'][count($_POST['files']) - 1]);
-                    }
-                    if ($result !== true) {
-                        $error .= __('Impossible to upload a file',
-                                'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1] . ' : ' . $result;
+                $thisfile = $_POST['files'][count($_POST['files']) - 1];
+                $filename = selupload_getName($_POST['files'][count($_POST['files']) - 1]);
+                if (is_readable($thisfile)) {
+                    $fp = fopen($thisfile, 'r');
+                    $object = $container->createObject($filename);
+                    $object->write($fp);
+                    @fclose($fp);
+                    $object = $container->getObject($filename);
+                    if (($object instanceof \OpenStackStorage\Object) and get_option('selupload_sync') == 'onlystorage') {
+                        @unlink($thisfile);
+                    } elseif (($object instanceof \OpenStackStorage\Object) !== true) {
+                        $error = __('Impossible to upload a file',
+                                'selupload') . ': ' . $thisfile;
                     }
                 } else {
-                    $error .= __('Do not have access to the file',
-                            'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
+                    $error = __('Do not have access to the file',
+                            'selupload') . ': ' . $thisfile;
                 }
                 unset($_POST['files'][count($_POST['files']) - 1]);
                 $progress = round(($_POST['count'] - count($_POST['files'])) / $_POST['count'], 3) * 100;
@@ -258,7 +260,16 @@ function selupload_allSynch()
         }
         exit();
     } catch (Exception $e) {
-        selupload_showMessage($e->getCode() . ' :: ' . $e->getMessage());
+        //$error = __('Connection is not established.', 'selupload');
+        $error = __('Impossible to upload a file',
+                'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
+        wp_send_json(array(
+            'files' => $_POST['files'],
+            'count' => $_POST['count'],
+            'progress' => 'Error',
+            'error' => $error . ' : ' . ($e->getCode() != 0 ? $e->getCode() . ' :: ' : '') . $e->getMessage()
+        ));
+        exit();
     }
 }
 
@@ -307,7 +318,7 @@ function selupload_settingsPage()
                     <td colspan="2"><?php _e(
                             'Type the information for access to your bucket.',
                             'selupload'
-                        );?> <?php _e('No account? <a href ="http://goo.gl/8Z0q8H">Sign up</a>','selupload');?></td>
+                        );?> <?php _e('No account? <a href ="http://goo.gl/8Z0q8H">Sign up</a>', 'selupload'); ?></td>
                 </tr>
                 <tr>
                     <td><label for="selupload_username"><b><?php _e(
@@ -342,7 +353,8 @@ function selupload_settingsPage()
                             get_option('selupload_container')
                         ); ?>" class="regular-text code"/>
                         <input type="button" name="test" id="submit" class="button button-primary"
-                               value="<?php _e('Check the connection', 'selupload'); ?>" onclick="selupload_testConnet()"/>
+                               value="<?php _e('Check the connection', 'selupload'); ?>"
+                               onclick="selupload_testConnet()"/>
                     </td>
                 </tr>
                 <tr>
@@ -494,8 +506,9 @@ function selupload_settingsPage()
             selupload_nextfile(files, count);
         }
         function selupload_testConnet() {
-            jQuery("#selupload_spinner").bind("ajaxSend", function() {
-                jQuery(this).show()});
+            jQuery("#selupload_spinner").bind("ajaxSend", function () {
+                jQuery(this).show()
+            });
             var data = {
                 login: jQuery("input[name='selupload_username']").val(),
                 password: jQuery("input[name='selupload_pass']").val(),
@@ -509,7 +522,7 @@ function selupload_settingsPage()
                     data: data,
                     success: function (response) {
                         selupload_message.show(0);
-                        selupload_message.html('<br />'+response);
+                        selupload_message.html('<br />' + response);
                         jQuery("html,body").animate({scrollTop: 0}, 1000);
                         jQuery("#selupload_spinner").hide();
                     },
@@ -593,29 +606,18 @@ add_action('admin_menu', 'selupload_createMenu');
 
 function selupload_cloudDelete($file)
 {
-    $sel = new selupload_SelectelStorage (get_option('selupload_username'), get_option('selupload_pass'), get_option(
-        'selupload_auth'
-    ));
-    $container = $sel->getContainer(get_option('selupload_container'));
-    $container->delete(selupload_getName($file));
-    $shab = array();
-    if (preg_match("/(.+)-(\d{3,4})x(\d{3,4})\.(.*)/u", $file, $shab)) {
-        $files = glob(get_option('upload_path') . DIRECTORY_SEPARATOR . $shab[1] . '-*.' . $shab[4]);
-        $files[] = get_option('upload_path') . DIRECTORY_SEPARATOR . $shab[1] . '.' . $shab[4];
+    try {
+        $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'));
+        $container = $connection->getContainer(get_option('selupload_container'));
+        $container->deleteObject(selupload_getName($file));
+        @unlink(get_option('upload_path') . DIRECTORY_SEPARATOR . selupload_getName($file));
 
-    } else {
-        $files = glob(get_option('upload_path') . DIRECTORY_SEPARATOR . substr_replace($file,
-                '-*.' . pathinfo($file, PATHINFO_EXTENSION), strripos($file, '.')));
-        $files[] = $file;
-    }
-    foreach ($files as $name) {
-        if (!empty ($name)) {
-            $container->delete(selupload_getName($name));
-            @unlink($name);
-        }
+        return $file;
+    } catch (Exception $e) {
+        return $file;
     }
 
-    return $file;
 }
 
 if (get_option('selupload_del') == 1) {
