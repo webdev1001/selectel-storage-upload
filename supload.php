@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.2.0
+ * Version: 1.2.2/2
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -97,7 +97,7 @@ function selupload_cloudUpload($postID)
 {
     try {
         $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
-            array('authurl' => 'https://' . get_option('selupload_auth') . '/'));
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'),15);
         $container = $connection->getContainer(get_option('selupload_container'));
         $file = get_attached_file($postID);
         if (is_readable($file)) {
@@ -124,7 +124,7 @@ function selupload_thumbUpload($metadata)
 {
     try {
         $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
-            array('authurl' => 'https://' . get_option('selupload_auth') . '/'));
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'),15);
         $container = $connection->getContainer(get_option('selupload_container'));
         $dir = get_option('upload_path') . DIRECTORY_SEPARATOR . dirname($metadata['file']);
         foreach ($metadata['sizes'] as $thumb) {
@@ -205,7 +205,7 @@ function selupload_allSynch()
         }
         $error = '';
         $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
-            array('authurl' => 'https://' . get_option('selupload_auth') . '/'), 15);
+            array('authurl' => 'https://' . get_option('selupload_auth') . '/'), 20);
         $container = $connection->getContainer(get_option('selupload_container'));
 
         if ($container instanceof \OpenStackStorage\Container) {
@@ -275,9 +275,7 @@ function selupload_settingsPage()
     <h2><?php _e('Settings', 'selupload'); ?> Selectel Storage</h2>
     <?php
     // Default settings
-    if (get_option('upload_path') == 'wp-content' . DIRECTORY_SEPARATOR . 'uploads' || get_option(
-            'upload_path'
-        ) == null
+    if (get_option('upload_path') == 'wp-content' . DIRECTORY_SEPARATOR . 'uploads' || get_option('upload_path') == null
     ) {
         update_option('upload_path', WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'uploads');
     }
@@ -427,89 +425,10 @@ function selupload_settingsPage()
     </div>
     <div id="selupload_synchtext" style="display: none" class="error"></div>
     <script type="text/javascript" language="JavaScript">
-        var selupload_prbar = jQuery('#selupload_progressBar');
-        var selupload_synchtext = jQuery('#selupload_synchtext');
-        var selupload_message = jQuery('#selupload_message');
-        function selupload_progress(percent, $element) {
-            selupload_prbar.show(0);
-            var progressBarWidth = percent * $element.width() / 100;
-            var complete = '';
-            if (percent == 100) {
-                complete = "<?php _e('Complete', 'selupload'); ?>&nbsp;";
-            }
-            $element.find('div').animate({width: progressBarWidth}, 500).html(percent + "%&nbsp;" + complete);
-        }
-        function selupload_nextfile(files, count) {
-            var data = {
-                files: files,
-                count: count,
-                action: 'selupload_allsynch'
-            };
-            jQuery.ajax({
-                type: 'POST',
-                url: ajaxurl,
-                data: data,
-                success: function (resp) {
-                    selupload_progress(resp.progress, selupload_prbar);
-                    if (resp.error !== '') {
-                        selupload_synchtext.show(0);
-                        selupload_synchtext.html(selupload_synchtext.html() + '<p><strong>' + resp.error + '</strong></p>');
-                    }
-                    if (resp.files.length !== 0) {
-                        selupload_nextfile(resp.files, resp.count);
-                    } else {
-                        selupload_progress(100, selupload_prbar);
-                        selupload_prbar.delay(2000).hide(0);
-                    }
-                },
-                dataType: 'json',
-                async: true
-            });
-        }
         <?php
     $files = selupload_getFilesArr(get_option('upload_path'));
-    if (is_array($files) == false) {
-        echo 'selupload_synchtext.show(0);';
-        echo 'selupload_synchtext.html(selupload_synchtext.html() + \'<p><strong>'.__('Catalog with files is not readable', 'selupload').'</strong></p>\');';
-    }
     echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
 ?>
-        function selupload_mansynch(files, count) {
-            selupload_synchtext.html('');
-            selupload_synchtext.hide(0);
-            selupload_prbar.show(0);
-            selupload_progress(0, selupload_prbar);
-            selupload_nextfile(files, count);
-        }
-        function selupload_testConnet() {
-            jQuery("#selupload_spinner").bind("ajaxSend", function () {
-                jQuery(this).show()
-            });
-            var data = {
-                login: jQuery("input[name='selupload_username']").val(),
-                password: jQuery("input[name='selupload_pass']").val(),
-                server: jQuery("input[name='selupload_auth']").val(),
-                container: jQuery("input[name='selupload_container']").val(),
-                action: 'selupload_testConnet'
-            };
-            jQuery.ajax({
-                    type: 'POST',
-                    url: ajaxurl,
-                    data: data,
-                    success: function (response) {
-                        selupload_message.show(0);
-                        selupload_message.html('<br />' + response);
-                        jQuery("html,body").animate({scrollTop: 0}, 1000);
-                        jQuery("#selupload_spinner").hide();
-                    },
-                    dataType: 'html'
-                }
-            );
-
-            jQuery("#selupload_spinner").unbind("ajaxSend");
-
-
-        }
     </script>
     <form method="post">
         <input type="button" name="archive" id="submit" class="synch button button-primary"
@@ -602,6 +521,11 @@ if (get_option('selupload_del') == 1) {
 add_filter('wp_generate_attachment_metadata', 'selupload_thumbUpload', 10, 1);
 add_action('add_attachment', 'selupload_cloudUpload', 10, 1);
 add_action('admin_enqueue_scripts', 'selupload_stylesheetToAdmin');
+function selupload_scripts()
+{
+    wp_enqueue_script('selupload_js', plugins_url( '/js/script.js' , __FILE__ ), array( 'jquery' ), '1.2.1',true);
+}
+add_action( 'admin_enqueue_scripts', 'selupload_scripts' );
 function selupload_regsettings()
 {
     register_setting('selupload_settings', 'selupload_auth');

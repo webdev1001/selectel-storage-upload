@@ -1,7 +1,6 @@
 {
     "require": {
         "php": ">=5.3.3",
-        "resty/resty": "@stable",
         "endeveit/open-stack-storage": "dev-master"
     }
 }
