@@ -3,7 +3,7 @@
  * Plugin Name: Selectel Storage Upload
  * Plugin URI: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-selectel
  * Description: The plugin allows you to upload files from the library to Selectel Storage
- * Version: 1.2.2/2
+ * Version: 1.2.3
  * Author: Mauhem
  * Author URI: http://wm-talk.net/
  * License: GNU GPLv2
@@ -201,17 +201,18 @@ function selupload_allSynch()
 {
     try {
         if (!empty($_POST['files'])) {
-            $_POST['files'] = selupload_corURI($_POST['files']);
+            $files = selupload_corURI(explode('||',$_POST['files']));
         }
         $error = '';
+        if ((!empty($files)) and (!empty($_POST['count'])) and (count($files) >= 1)) {
+        ob_start('ob_gzhandler');
         $connection = new Connection(get_option('selupload_username'), get_option('selupload_pass'),
             array('authurl' => 'https://' . get_option('selupload_auth') . '/'), 20);
         $container = $connection->getContainer(get_option('selupload_container'));
 
         if ($container instanceof \OpenStackStorage\Container) {
-            if ((!empty($_POST['files'])) and (!empty($_POST['count'])) and (count($_POST['files']) >= 1)) {
-                $thisfile = $_POST['files'][count($_POST['files']) - 1];
-                $filename = selupload_getName($_POST['files'][count($_POST['files']) - 1]);
+                $thisfile = $files[count($files) - 1];
+                $filename = selupload_getName($files[count($files) - 1]);
                 if (is_readable($thisfile)) {
                     $fp = fopen($thisfile, 'r');
                     $object = $container->createObject($filename);
@@ -228,23 +229,41 @@ function selupload_allSynch()
                     $error = __('Do not have access to the file',
                             'selupload') . ': ' . $thisfile;
                 }
-                unset($_POST['files'][count($_POST['files']) - 1]);
-                $progress = round(($_POST['count'] - count($_POST['files'])) / $_POST['count'], 3) * 100;
+                unset($files[count($files) - 1]);
+                $progress = round(($_POST['count'] - count($files)) / $_POST['count'], 4) * 100;
                 wp_send_json(array(
-                    'files' => $_POST['files'],
+                    'files' => implode('||',$files),
                     'count' => $_POST['count'],
                     'progress' => $progress,
                     'error' => $error
                 ));
+            }else {
+            $error = __('Unable to connect to the container',
+                    'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
+            wp_send_json(array(
+                'files' => $_POST['files'],
+                'count' => $_POST['count'],
+                'progress' => 'Error',
+                'error' => $error
+            ));
             }
+        }else{
+            $error = __('Data empty',
+                'selupload');
+            wp_send_json(array(
+                'files' => null,
+                'count' => null,
+                'progress' => 'Error',
+                'error' => $error
+            ));
         }
         exit();
     } catch (Exception $e) {
         $error = __('Impossible to upload a file',
                 'selupload') . ': ' . $_POST['files'][count($_POST['files']) - 1];
         wp_send_json(array(
-            'files' => $_POST['files'],
-            'count' => $_POST['count'],
+            'files' => !empty($_POST['files'])?$_POST['files']:null,
+            'count' => !empty($_POST['count'])?$_POST['count']:null,
             'progress' => 'Error',
             'error' => $error . ' : ' . ($e->getCode() != 0 ? $e->getCode() . ' :: ' : '') . $e->getMessage()
         ));
@@ -253,11 +272,6 @@ function selupload_allSynch()
 }
 
 add_action('wp_ajax_selupload_allsynch', 'selupload_allSynch');
-
-function selupload_stylesheetToAdmin()
-{
-    wp_enqueue_style('selupload-progress', plugins_url('css/admin.css', __FILE__));
-}
 
 function selupload_settingsPage()
 {
@@ -427,7 +441,7 @@ function selupload_settingsPage()
     <script type="text/javascript" language="JavaScript">
         <?php
     $files = selupload_getFilesArr(get_option('upload_path'));
-    echo 'var files_arr = '.json_encode($files).';'."\n".'var files_count = '.count($files).';'."\n";
+    echo 'var files_arr = '.json_encode(implode('||',$files)).';'."\n".'var files_count = '.count($files).';'."\n";
 ?>
     </script>
     <form method="post">
@@ -518,14 +532,23 @@ function selupload_cloudDelete($file)
 if (get_option('selupload_del') == 1) {
     add_filter('wp_delete_file', 'selupload_cloudDelete', 10, 1);
 }
+
+function selupload_scripts()
+{
+    //wp_deregister_script('jquery');
+    //wp_enqueue_script('jquery','https://code.jquery.com/jquery-1.11.1.min.js',false,'1.11.1',false);
+    wp_enqueue_script('selupload_js', plugins_url( '/js/script.js' , __FILE__ ), array( 'jquery' ), '1.2.1',true);
+}
+function selupload_stylesheetToAdmin()
+{
+    wp_enqueue_style('selupload-progress', plugins_url('css/admin.css', __FILE__));
+}
+
 add_filter('wp_generate_attachment_metadata', 'selupload_thumbUpload', 10, 1);
 add_action('add_attachment', 'selupload_cloudUpload', 10, 1);
 add_action('admin_enqueue_scripts', 'selupload_stylesheetToAdmin');
-function selupload_scripts()
-{
-    wp_enqueue_script('selupload_js', plugins_url( '/js/script.js' , __FILE__ ), array( 'jquery' ), '1.2.1',true);
-}
 add_action( 'admin_enqueue_scripts', 'selupload_scripts' );
+
 function selupload_regsettings()
 {
     register_setting('selupload_settings', 'selupload_auth');

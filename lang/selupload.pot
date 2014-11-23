@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Selectel Storage Upload\n"
-"POT-Creation-Date: 2014-11-15 16:12+0300\n"
-"PO-Revision-Date: 2014-11-15 16:13+0300\n"
+"POT-Creation-Date: 2014-11-23 17:53+0300\n"
+"PO-Revision-Date: 2014-11-23 17:54+0300\n"
 "Last-Translator: Mauhem <me@wm-talk.net>\n"
 "Language-Team: Mauhem <me@wm-talk.net>\n"
 "Language: so_KE\n"
@@ -36,47 +36,55 @@ msgid ""
 "The plugin has now disabled itself."
 msgstr ""
 
-#: supload.php:71
+#: supload.php:73
 msgid "Connection is successfully established. Save the settings."
 msgstr ""
 
-#: supload.php:73 supload.php:226
+#: supload.php:77
 msgid "Connection is not established."
 msgstr ""
 
-#: supload.php:242
+#: supload.php:225 supload.php:262
 msgid "Impossible to upload a file"
 msgstr ""
 
-#: supload.php:246
+#: supload.php:229
 msgid "Do not have access to the file"
 msgstr ""
 
-#: supload.php:285
+#: supload.php:241
+msgid "Unable to connect to the container"
+msgstr ""
+
+#: supload.php:251
+msgid "Data empty"
+msgstr ""
+
+#: supload.php:289
 msgid "Settings"
 msgstr ""
 
-#: supload.php:308
+#: supload.php:307
 msgid "Type the information for access to your bucket."
 msgstr ""
 
-#: supload.php:310
+#: supload.php:309
 msgid "No account? <a href =\"http://goo.gl/8Z0q8H\">Sign up</a>"
 msgstr ""
 
-#: supload.php:314
+#: supload.php:313
 msgid "Username"
 msgstr ""
 
-#: supload.php:325
+#: supload.php:324
 msgid "Password"
 msgstr ""
 
-#: supload.php:336
+#: supload.php:335
 msgid "Bucket"
 msgstr ""
 
-#: supload.php:345
+#: supload.php:344
 msgid "Check the connection"
 msgstr ""
 
@@ -130,36 +138,28 @@ msgid ""
 "Delete files from the Selectel Storage if they are removed from the library"
 msgstr ""
 
-#: supload.php:450
-msgid "Complete"
-msgstr ""
-
-#: supload.php:485
-msgid "Catalog with files is not readable"
-msgstr ""
-
-#: supload.php:527
+#: supload.php:449
 msgid "Manual synchronization"
 msgstr ""
 
-#: supload.php:533
+#: supload.php:455
 msgid ""
 "You can always help the development of plug-in and contribute to the "
 "emergence of new functionality."
 msgstr ""
 
-#: supload.php:539
+#: supload.php:461
 msgid "If you have any ideas or suggestions"
 msgstr ""
 
-#: supload.php:542
+#: supload.php:464
 msgid "contact the author"
 msgstr ""
 
-#: supload.php:548
+#: supload.php:470
 msgid "You can always thank the author of financially."
 msgstr ""
 
-#: supload.php:567
+#: supload.php:489
 msgid "Yandex.Money"
 msgstr ""

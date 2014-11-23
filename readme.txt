@@ -4,7 +4,7 @@ Donate link: http://wm-talk.net/supload-wordpress-plagin-dlya-zagruzki-na-select
 Tags: Uploads, Selectel, CDN, Cloud, Storage, media library, OpenStack, Object storage
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.2.1
+Stable tag: 1.2.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,9 +42,15 @@ In Russian:<br />
 * <strong>Do not have access to the file</strong><br />
 Проблема с чтением файла. Проверьте существует ли файл и права доступа к нему.
 
+* <strong>Invalid response from the authentication service.</strong><br />
+Возмодны два варианта:
+1. Хостер блокирует доступ к серверу Selectel (по умолчанию: auth.selcdn.ru, порт 443). Обратитесь к техподдержке хостера.
+2. Проблема на сервере Selectel. Просто подождите, либо сообщите об ошиббке техподдержке.
+
 == Changelog ==
 <a href="https://github.com/Mauhem/selectel-storage-upload">Commit Log</a><br />
 
+<strong>b5fcc6a</strong> Исправлена ошибка JS при отложенной загрузке JQuery.<br />
 <strong>1cb9c14</strong> Заменена библиотека загрузки в хранилище на стороннюю. Более информативные сообщения об ошибках. Корректное удаление файлов из хранилица.<br />
 <strong>7cca652</strong></strong> Проверять подключение можно на лету, без сохранения нстроек. Откорректированы имена переменных. Приведены к общему виду.<br />
 <strong>746e122</strong> Вывод ошибки подключения к контейнеру при ручной синхронизации. Откорректированы иена переменных для улучшения совместимости<br />

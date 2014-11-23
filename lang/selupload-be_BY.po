@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Selectel Storage Upload\n"
-"POT-Creation-Date: 2014-11-15 16:08+0300\n"
-"PO-Revision-Date: 2014-11-15 16:11+0300\n"
+"POT-Creation-Date: 2014-11-23 17:48+0300\n"
+"PO-Revision-Date: 2014-11-23 17:49+0300\n"
 "Last-Translator: Mauhem <me@wm-talk.net>\n"
 "Language-Team: Mauhem <me@wm-talk.net>\n"
 "Language: be_BY\n"
@@ -43,49 +43,57 @@ msgstr ""
 "Для працы ўбудовы Selectel Cloud Upload неабходна, каб cURL быў скампіляваны "
 "з падтрымкай OpenSSL. Убудова зараз адключана."
 
-#: supload.php:71
+#: supload.php:73
 msgid "Connection is successfully established. Save the settings."
 msgstr "Злучэнне паспяхова ўстаноўлена. Захавайце налады."
 
-#: supload.php:73 supload.php:226
+#: supload.php:77
 msgid "Connection is not established."
 msgstr "Злучэнне з кантейнераз не  ўстаноўлена. Праверце правільнасць наладак"
 
-#: supload.php:242
+#: supload.php:225 supload.php:262
 msgid "Impossible to upload a file"
 msgstr "Немагчыма загрузіць файл"
 
-#: supload.php:246
+#: supload.php:229
 msgid "Do not have access to the file"
 msgstr "Файл не існуе ці недаступны для чытання"
 
-#: supload.php:285
+#: supload.php:241
+msgid "Unable to connect to the container"
+msgstr "Unable to connect to the container"
+
+#: supload.php:251
+msgid "Data empty"
+msgstr "Дадзеныя пустыя"
+
+#: supload.php:289
 msgid "Settings"
 msgstr "Наладкі"
 
-#: supload.php:308
+#: supload.php:307
 msgid "Type the information for access to your bucket."
 msgstr "Калі ласка, увядзіце інфармацыю для доступу да вашага кантэйнера."
 
-#: supload.php:310
+#: supload.php:309
 msgid "No account? <a href =\"http://goo.gl/8Z0q8H\">Sign up</a>"
 msgstr ""
 "Яшчэ няма ўліковага запісу? <a href =\"http://goo.gl/8Z0q8H"
 "\">Зарэгістравацца</a>"
 
-#: supload.php:314
+#: supload.php:313
 msgid "Username"
 msgstr "Імя карыстальніка"
 
-#: supload.php:325
+#: supload.php:324
 msgid "Password"
 msgstr "Пароль"
 
-#: supload.php:336
+#: supload.php:335
 msgid "Bucket"
 msgstr "Кантэйнер"
 
-#: supload.php:345
+#: supload.php:344
 msgid "Check the connection"
 msgstr "Праверыць злучэнне"
 
@@ -141,19 +149,11 @@ msgid ""
 "Delete files from the Selectel Storage if they are removed from the library"
 msgstr "Выдаляць файлы з Selectel Storage, калі яны выдаляюцца з бібліятэкі"
 
-#: supload.php:450
-msgid "Complete"
-msgstr "Скончана"
-
-#: supload.php:485
-msgid "Catalog with files is not readable"
-msgstr "Каталог з файламі не чытаецца"
-
-#: supload.php:527
+#: supload.php:449
 msgid "Manual synchronization"
 msgstr "Ручная сінхранізацыя"
 
-#: supload.php:533
+#: supload.php:455
 msgid ""
 "You can always help the development of plug-in and contribute to the "
 "emergence of new functionality."
@@ -161,21 +161,27 @@ msgstr ""
 "Вы заўсёды можаце дапамагчы развіццю плагіна і спрыяюць з'яўленню новай "
 "функцыянальнасці."
 
-#: supload.php:539
+#: supload.php:461
 msgid "If you have any ideas or suggestions"
 msgstr "Калі ў вас ёсць ідэі ці прапановы"
 
-#: supload.php:542
+#: supload.php:464
 msgid "contact the author"
 msgstr "звязацца з аўтарам"
 
-#: supload.php:548
+#: supload.php:470
 msgid "You can always thank the author of financially."
 msgstr "Вы заўсёды можаце падзякаваць аўтару матэрыяльна."
 
-#: supload.php:567
+#: supload.php:489
 msgid "Yandex.Money"
 msgstr "Яндэкс.Грошы"
+
+#~ msgid "Complete"
+#~ msgstr "Скончана"
+
+#~ msgid "Catalog with files is not readable"
+#~ msgstr "Каталог з файламі не чытаецца"
 
 #~ msgid ""
 #~ "Plugin Selectel Cloud Uploader requires Zlib extension. The plugin has "

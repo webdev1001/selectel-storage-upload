@@ -45,7 +45,7 @@ function selupload_mansynch(files, count) {
     selupload_nextfile(files, count);
 }
 function selupload_testConnet() {
-    jQuery("#selupload_spinner").bind("ajaxSend", function () {
+    jQuery('#selupload_spinner').bind("ajaxSend", function () {
         jQuery(this).show()
     });
     var data = {
